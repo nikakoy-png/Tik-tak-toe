@@ -14,6 +14,7 @@ def default_board(board_len):
 class AbstractPlay(models.Model):
     play_hash_code = models.CharField(max_length=255, blank=False)
     create_at = models.DateTimeField(auto_now=True)
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
 
     class Meta:
         abstract = True
