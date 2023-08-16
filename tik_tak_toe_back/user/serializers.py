@@ -1,3 +1,4 @@
+from asgiref.sync import sync_to_async
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -40,7 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
                   'last_name',
                   'email')
 
-
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255, write_only=True, required=True)
     password = serializers.CharField(max_length=128, write_only=True, required=True)
@@ -61,4 +61,3 @@ class UserLoginSerializer(serializers.Serializer):
         data['user'] = user
 
         return data
-
