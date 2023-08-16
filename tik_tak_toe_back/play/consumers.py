@@ -54,8 +54,10 @@ class SearchPlay(AsyncWebsocketConsumer):
                 'data': message,
             }
         )
-        print(self.search_users)
 
     async def send_message(self, event):
         message = event['data']
         await self.send(text_data=json.dumps(message))
+
+
+
