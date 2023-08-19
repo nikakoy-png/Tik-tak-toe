@@ -93,7 +93,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.play_name, {
                     "type": 'INFO',
-                    "message": 'successfully_connected_player'
+                    "message": 'successfully_connected_player',
                 }
             )
 
@@ -114,7 +114,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.play_name, {
                     "type": 'PLAY',
-                    "message": 'winner'
+                    "message": 'winner',
                     "player": curr_tur
                 }
             )

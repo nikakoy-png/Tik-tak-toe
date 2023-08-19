@@ -3,4 +3,4 @@ from django.db import models
 
 
 class User(AbstractUser):
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(default=100)
