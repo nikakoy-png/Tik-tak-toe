@@ -1,0 +1,136 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway:400,700);
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: 'Raleway', sans-serif;
+  background: #E9F8DF;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus { outline: 0; }
+
+#wrapper {
+  perspective: 500px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+  transform: translate3d(-50%,-50%,0);
+}
+
+h1 {
+  color: #416171;
+  font-size: 43px;
+  margin: 0;
+}
+h2 {
+  color: #349E97;
+  margin: 0;
+}
+
+form {
+  margin: 35px 0;
+}
+
+#inputs {
+  height: 127px;
+  transition: height .5s ease-in-out;
+  div {
+    height: 41px;
+    transform-origin: 0 0;
+    transition: transform .5s ease-in-out;
+  }
+  > div > div > div {
+    transform: rotateX(0deg);
+    transform-style: preserve-3d;
+  }
+  > div > div > div input:nth-child(2),
+  > div > div > div > div input:nth-child(2) {
+    transform: translateZ(-1px) rotateX(180deg);
+  }
+  > div > div > div > div {
+    transform: translateY(-41px) rotateX(0deg);
+    transform-style: preserve-3d;
+  }
+}
+
+input {
+  background: #FFFEFC;
+  border: 0;
+  box-sizing: border-box;
+  display: block;
+  font-family: Raleway, sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  margin: 0 auto;
+  padding: 13px;
+  transition: all .2s ease-in-out;
+  width: 300px;
+  transform-origin: 0 0;
+  -webkit-font-smoothing: antialiased;
+
+  &:hover {
+    background: #f3f3f3;
+  }
+  &:focus {
+    background: #EAEAEA;
+  }
+
+  &[type=submit] {
+    background: #43434C;
+    color: #FFFEFC;
+    cursor: pointer;
+  }
+  &[type=radio] { display: none; }
+}
+
+input:checked {
+  &[value=reset] {
+    ~ #inputs { height: 84px; }
+    ~ #labels { margin-top: -10px; }
+    ~ #inputs div > div > div { transform: rotateX(180deg); }
+    ~ #inputs div > div > div > div { transform: translateY(-41px) rotateX(180deg); }
+    ~ #labels label[for=reset],
+    ~ #labels label[for=register],
+    ~ #labels label[for=login]:first-child { transition: opacity .5s; opacity: 0; }
+  }
+  &[value=register] {
+    ~ #inputs { height: 170px; }
+    ~ #labels { margin-top: 30px; }
+    ~ #labels label[for=reset],
+    ~ #labels label[for=register],
+    ~ #labels label[for=login]:nth-child(3) { transition: opacity .5s; opacity: 0; }
+  }
+  &[value=login] {
+    ~ #labels { margin-top: 11px; }
+    ~ #inputs div > div > div > div { transform: translateY(-41px) rotateX(180deg); }
+    ~ #labels label[for=login] { transition: opacity .5s; opacity: 0; }
+  }
+}
+
+
+#labels {
+  transition: margin .5s ease-in-out;
+}
+label {
+  display: block;
+  font-size: 14px;
+  color: #43434C;
+  margin-bottom: 5px;
+  font-weight: 600;
+  height: 16px;
+  transition: opacity 1s .3s;
+  overflow: hidden;
+  span {
+    cursor: pointer;
+    color: #349E97;
+  }
+}
+
+#hint {
+  position: absolute;
+  bottom: 20px;
+  opacity: .2;
+  left: 50%;
+  margin: 0 -62px;
+  font-weight: 600;
+}

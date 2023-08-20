@@ -1,1 +1,11 @@
-<p>login works!</p>
+<div id="wrapper">
+  <h1>TIK TAK TOE</h1>
+  <h2>text text text</h2>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div>
+      <input formControlName="username" type="text" placeholder="username" autofocus>
+      <input formControlName="password" type="password" placeholder="password" autofocus>
+      <button type="submit" [disabled]="loginForm.invalid">Login</button>
+    </div>
+  </form>
+</div>

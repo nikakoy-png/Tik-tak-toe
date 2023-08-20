@@ -1,8 +1,8 @@
 export class RegistrationDto {
   username!: string;
   email!: string;
-  firstName!: string;
-  lastName!: string;
+  first_name!: string;
+  last_name!: string;
   password!: string;
-  passwordConfirm!: string;
+  password_confirm!: string;
 }

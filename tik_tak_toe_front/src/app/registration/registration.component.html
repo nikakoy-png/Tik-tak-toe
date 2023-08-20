@@ -1,1 +1,17 @@
-<p>registration works!</p>
+<div id="wrapper">
+  <h1>TIK TAK TOE</h1>
+  <h2>text text text</h2>
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+    <div id="inputs">
+      <div>
+        <input type="email" placeholder="email" formControlName="email">
+        <input type="text" placeholder="username" formControlName="username">
+        <input type="text" placeholder="first name" formControlName="first_name">
+        <input type="text" placeholder="last name" formControlName="last_name">
+        <input type="password" placeholder="password" formControlName="password">
+        <input type="password" placeholder="confirm password" formControlName="password_confirm">
+        <button type="submit" [disabled]="registrationForm.invalid">Register</button>
+      </div>
+    </div>
+  </form>
+</div>
