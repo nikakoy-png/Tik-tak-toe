@@ -7,12 +7,18 @@ import { LoginComponent } from './login/login.component';
 import {HttpClientModule} from "@angular/common/http";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {AppRoutingModule} from "./app-routing.module";
+import { MainComponent } from './main/main.component';
+import { SearchComponent } from './search/search.component';
+import { SearchSocketComponent } from './search-socket/search-socket.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RegistrationComponent,
-    LoginComponent
+    LoginComponent,
+    MainComponent,
+    SearchComponent,
+    SearchSocketComponent
   ],
   imports: [
     BrowserModule,
