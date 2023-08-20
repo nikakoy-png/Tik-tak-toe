@@ -33,6 +33,7 @@ async def auth_user(request):
 
 
 async def register_user(request):
+    print(request.data)
     serializer = UserRegistrationSerializer(data=request.data)
     if await sync_to_async(serializer.is_valid)():
         user = await sync_to_async(serializer.save)()

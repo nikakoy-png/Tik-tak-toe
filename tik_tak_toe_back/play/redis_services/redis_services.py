@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
+from django.apps import apps
 from django.contrib.auth import get_user_model
 
 from play.redis_services.redis_connector import get_redis_connection
 
-User = get_user_model()
 
 
 async def start_turn_timer(game_id, player_id, timeout=60):
@@ -15,7 +15,7 @@ async def start_turn_timer(game_id, player_id, timeout=60):
     await redis.wait_closed()
 
 
-async def get_next_player(game_id, players) -> User:
+async def get_next_player(game_id, players):
     redis = await get_redis_connection()
     current_turn = await redis.get(f"current_turn:{game_id}")
     if not current_turn:
