@@ -7,6 +7,7 @@ export class SearchSocketService {
   private socket: WebSocket | null = null;
 
   connectToSocketServer(socketUrl: string): void {
+    console.log(socketUrl)
     this.socket = new WebSocket(socketUrl);
 
     this.socket.onopen = event => {

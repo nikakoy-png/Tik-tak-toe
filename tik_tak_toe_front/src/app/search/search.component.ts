@@ -20,7 +20,6 @@ export class SearchComponent {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.typePlay = params['play_type'];
-      console.log(this.typePlay)
     });
     this.socketUrl = `ws://localhost:8000/ws/search-play/${this.typePlay}/`;
     this.socketService.connectToSocketServer(this.socketUrl);
