@@ -9,6 +9,7 @@ import {AppRoutingModule} from "./app-routing.module";
 import { MainComponent } from './main/main.component';
 import { SearchComponent } from './search/search.component';
 import {SearchSocketService} from "./search-socket.service";
+import { PlayComponent } from './play/play.component';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import {SearchSocketService} from "./search-socket.service";
     LoginComponent,
     MainComponent,
     SearchComponent,
+    PlayComponent,
   ],
   imports: [
     BrowserModule,
