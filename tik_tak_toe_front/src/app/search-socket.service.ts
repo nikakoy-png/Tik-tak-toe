@@ -1,17 +1,39 @@
 import { Injectable } from '@angular/core';
-import {Socket} from "ngx-socket-io";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchSocketService {
-  constructor(private socket: Socket) { }
+  private socket: WebSocket | null = null;
 
-  sendMessage(message: string): void {
-    this.socket.emit(message);
+  connectToSocketServer(socketUrl: string): void {
+    this.socket = new WebSocket(socketUrl);
+
+    this.socket.onopen = event => {
+      console.log('WebSocket connection opened:', event);
+    };
+
+    this.socket.onmessage = event => {
+      console.log('WebSocket message received:', event.data);
+    };
+
+    this.socket.onclose = event => {
+      console.log('WebSocket connection closed:', event);
+    };
   }
 
-  onMessageReceived(): any {
-    return this.socket.fromEvent('test')
+  disconnectFromSocketServer(): void {
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+  }
+
+  onMessageReceived(callback: (msg: string) => void): void {
+    if (this.socket) {
+      this.socket.onmessage = event => {
+        callback(event.data);
+      };
+    }
   }
 }
