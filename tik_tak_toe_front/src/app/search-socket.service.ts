@@ -30,7 +30,7 @@ export class SearchSocketService {
     }
   }
 
-  onMessageReceived(callback: (msg: string) => void): void {
+  onMessageReceived(callback: (msg: any) => void): void {
     if (this.socket) {
       this.socket.onmessage = event => {
         callback(event.data);

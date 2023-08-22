@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {SearchSocketService} from "../search-socket.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-search',
@@ -13,7 +13,8 @@ export class SearchComponent {
 
   constructor(
     private socketService: SearchSocketService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
   }
 
@@ -23,8 +24,14 @@ export class SearchComponent {
     });
     this.socketUrl = `ws://localhost:8000/ws/search-play/${this.typePlay}/`;
     this.socketService.connectToSocketServer(this.socketUrl);
-    this.socketService.onMessageReceived((msg: string) => {
-      console.log(msg);
+    this.socketService.onMessageReceived((msg: any) => {
+      const parsedMsg = JSON.parse(msg);
+      const type_play = parsedMsg['type_play'];
+      const play_hash_code = parsedMsg['play_hash_code'];
+      if (parsedMsg["msg"] === "successful") {
+         this.socketService.disconnectFromSocketServer();
+         this.router.navigate(['/play', `${type_play}`, `${play_hash_code}`]);
+      }
     });
   }
 

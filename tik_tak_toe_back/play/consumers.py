@@ -38,7 +38,8 @@ class SearchPlay(AsyncWebsocketConsumer):
             for user in users:
                 try:
                     await self.send_user_message(user[0].username, {'msg': 'successful',
-                                                                    'play_hash_code': play_hash_code})
+                                                                    'play_hash_code': play_hash_code,
+                                                                    'type_play': self.type_play})
                 except ConnectionResetError:
                     await self.disconnect_connected_user(user[0])
                     break
@@ -68,7 +69,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
         self.user = self.scope["user"]
         self.play_hash_code = self.scope["url_route"]["kwargs"]["play_hash_code"]
         self.play_type = self.scope["url_route"]["kwargs"]["play_type"]
-        self.play_name = "play_%ds" % self.play_hash_code
+        self.play_name = "play_%s" % self.play_hash_code
 
         if not is_player_in_game:
             await self.close()
@@ -86,16 +87,17 @@ class PlayConsumer(AsyncWebsocketConsumer):
             "type": 'INFO',
             "message": 'successfully_connected_player',
         }))
-        channel__ = await self.channel_layer.group_channels(self.play_name)
-        if len(channel__) == 2:
-            await start_turn_timer(self.play_hash_code, await get_next_player(
-                self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type)).pk)
-            await self.channel_layer.group_send(
-                self.play_name, {
-                    "type": 'INFO',
-                    "message": 'successfully_connected_player',
-                }
-            )
+        # channel__ = await self.channel_layer.group_channels(self.play_name)
+        # channel_names = list(channel__.keys())
+        # if len(channel_names) == 2:
+        await start_turn_timer(self.play_hash_code, await get_next_player(
+            self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type)).pk)
+        await self.channel_layer.group_send(
+            self.play_name, {
+                "type": 'INFO',
+                "message": 'successfully_connected_player',
+            }
+        )
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.play_name, self.channel_name)
