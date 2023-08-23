@@ -25,7 +25,7 @@ class WebSocketTokenAuthMiddleware(BaseMiddleware):
                 decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
                 user_id = decoded_token.get("user_id")
                 if user_id:
-                    user = await self.get_user(user_id, User)  # Передаем модель в функцию
+                    user = await self.get_user(user_id, User)
                     scope["user"] = user
 
         except jwt.exceptions.InvalidTokenError:
@@ -34,7 +34,7 @@ class WebSocketTokenAuthMiddleware(BaseMiddleware):
         return await super().__call__(scope, receive, send)
 
     @database_sync_to_async
-    def get_user(self, user_id, User):  # Получаем модель как аргумент
+    def get_user(self, user_id, User):
         try:
             return User.objects.get(id=user_id)
         except User.DoesNotExist:

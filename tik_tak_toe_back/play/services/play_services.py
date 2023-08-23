@@ -1,23 +1,26 @@
-from django.contrib.auth import get_user_model
+from asgiref.sync import sync_to_async
+
 from play.Factory.creator_play_setting import CreatePlay
 from play.Factory.play_creator import PlayCreator
 
 
 async def is_player_in_game(user, play_hash_code: str, type_play: str) -> bool:
     model = await CreatePlay(PlayCreator(), type_play)
-    play = await model.aget(play_hash_code=play_hash_code)
+    play = await model.objects.aget(play_hash_code=play_hash_code)
     return True if (play.user1 == user or play.user2 == user) else False
 
 
 async def get_user_from_play(play_hash_code: str, type_play: str) -> list:
     model = await CreatePlay(PlayCreator(), type_play)
-    play = await model.af(play_hash_code=play_hash_code)
-    return [play.user1, play.user2]
+    play = await model.objects.aget(play_hash_code=play_hash_code)
+    user1 = await play.user1
+    user2 = await play.user2
+    return [user1, user2]
 
 
 async def upd_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int):
     model = await CreatePlay(PlayCreator(), play_type)
-    play = await model.aget(play_hash_code=play_hash_code)
+    play = await model.objects.aget(play_hash_code=play_hash_code)
     if play.board[Oy][Ox] == 0:
         play.board[Oy][Ox] = curr_tur
         play.save()
@@ -25,7 +28,7 @@ async def upd_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_
 
 async def check_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int, goal: int):
     model = await CreatePlay(PlayCreator(), play_type)
-    play = await model.aget(play_hash_code=play_hash_code)
+    play = await model.objects.aget(play_hash_code=play_hash_code)
     board = play.board
 
     def check_line(past_Oy: int,
