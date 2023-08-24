@@ -16,13 +16,18 @@ async def get_user_from_play(play_hash_code: str, type_play: str) -> list:
     return [play.user1, play.user2]
 
 
-
 async def upd_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int):
     model = await CreatePlay(PlayCreator(), play_type)
     play = await model.objects.aget(play_hash_code=play_hash_code)
     if play.board[Oy][Ox] == 0:
         play.board[Oy][Ox] = curr_tur
         play.save()
+
+
+async def get_board(play_type: str, play_hash_code: str):
+    model = await CreatePlay(PlayCreator(), play_type)
+    play = await model.objects.aget(play_hash_code=play_hash_code)
+    return play
 
 
 async def check_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int, goal: int):

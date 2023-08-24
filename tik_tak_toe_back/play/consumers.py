@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 from play.redis_services.redis_services import get_next_player, start_turn_timer
 from play.services.play_factory import create_play
-from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board
+from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board, get_board
 
 
 class SearchPlay(AsyncWebsocketConsumer):
@@ -90,12 +90,15 @@ class PlayConsumer(AsyncWebsocketConsumer):
         # channel__ = await self.channel_layer.group_channels(self.play_name)
         # channel_names = list(channel__.keys())
         # if len(channel_names) == 2:
+        board = await get_board(self.play_hash_code, self.play_type)
         await start_turn_timer(self.play_hash_code, await get_next_player(
             self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type)))
+
         await self.channel_layer.group_send(
             self.play_name, {
                 "type": "INFO",
-                "message": "successfully_connected_player"
+                "message": "successfully_connected_player",
+                "board": board
             }
         )
 
