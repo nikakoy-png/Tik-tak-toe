@@ -12,10 +12,9 @@ async def is_player_in_game(user, play_hash_code: str, type_play: str) -> bool:
 
 async def get_user_from_play(play_hash_code: str, type_play: str) -> list:
     model = await CreatePlay(PlayCreator(), type_play)
-    play = await model.objects.aget(play_hash_code=play_hash_code)
-    user1 = await play.user1
-    user2 = await play.user2
-    return [user1, user2]
+    play = await model.objects.select_related('user1', 'user2').aget(play_hash_code=play_hash_code)
+    return [play.user1, play.user2]
+
 
 
 async def upd_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int):

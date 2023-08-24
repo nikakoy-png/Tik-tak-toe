@@ -91,11 +91,11 @@ class PlayConsumer(AsyncWebsocketConsumer):
         # channel_names = list(channel__.keys())
         # if len(channel_names) == 2:
         await start_turn_timer(self.play_hash_code, await get_next_player(
-            self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type)).pk)
+            self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type)))
         await self.channel_layer.group_send(
             self.play_name, {
-                "type": 'INFO',
-                "message": 'successfully_connected_player',
+                "type": "INFO",
+                "message": "successfully_connected_player"
             }
         )
 
@@ -123,3 +123,10 @@ class PlayConsumer(AsyncWebsocketConsumer):
         else:
             await start_turn_timer(self.play_hash_code, await get_next_player(
             self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type)).pk)
+
+    async def INFO(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps({
+            "type": 'INFO',
+            "message": message
+        }))
