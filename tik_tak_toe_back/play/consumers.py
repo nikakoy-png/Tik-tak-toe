@@ -102,6 +102,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
             }
         )
 
+
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.play_name, self.channel_name)
 
@@ -129,7 +130,9 @@ class PlayConsumer(AsyncWebsocketConsumer):
 
     async def INFO(self, event):
         message = event['message']
+        board = event['board']
         await self.send(text_data=json.dumps({
             "type": 'INFO',
-            "message": message
+            "message": message,
+            "board": board
         }))

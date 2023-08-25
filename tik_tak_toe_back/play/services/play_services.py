@@ -24,10 +24,10 @@ async def upd_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_
         play.save()
 
 
-async def get_board(play_type: str, play_hash_code: str):
+async def get_board(play_hash_code: str, play_type: str):
     model = await CreatePlay(PlayCreator(), play_type)
     play = await model.objects.aget(play_hash_code=play_hash_code)
-    return play
+    return play.board
 
 
 async def check_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int, goal: int):
