@@ -12,6 +12,8 @@ export class PlayComponent {
   typePlay = '';
   hashCodePlay = '';
 
+  curr_tur!: any;
+
   gameBoard!: any[][];
 
   constructor(
@@ -30,25 +32,30 @@ export class PlayComponent {
     this.socketService.connectToSocketServer(this.socketUrl);
     this.socketService.onMessageReceived((msg: any) => {
       const parsedMsg = JSON.parse(msg);
-      console.log(parsedMsg);
+      this.curr_tur = parsedMsg['curr_tur']
       this.gameBoard = parsedMsg['board'];
-      this.gameBoard = this.generateGameBoard();
+      this.generateGameBoard();
     });
   }
 
-  generateGameBoard(): string[][] {
-    if (!this.gameBoard) {
-      return [];
+  handleCellClick(Oy: number, Ox: number): void {
+    const message = {
+      "Oy": Oy,
+      "Ox": Ox,
+      "curr_tur": this.curr_tur,
     }
-
-    const board: string[][] = [];
-    for (let i = 0; i < this.gameBoard.length; i++) {
-      const row: string[] = [];
-      for (let j = 0; j < this.gameBoard[i].length; j++) {
-        row.push((this.gameBoard[i][j] === 0) ? ' ' : 'X');
-      }
-      board.push(row);
-    }
-    return board;
+    const messageString = JSON.stringify(message);
+    this.socketService.sendMessage(messageString);
   }
+
+  generateGameBoard(): void {
+    this.gameBoard = this.gameBoard.map((row, rowIndex) => {
+      return row.map((cellValue, colIndex) => ({
+        value: cellValue === 0 ? ' ' : (cellValue === 1 ? 'X' : 'O'),
+        rowIndex,
+        colIndex
+      }));
+    });
+  }
+
 }

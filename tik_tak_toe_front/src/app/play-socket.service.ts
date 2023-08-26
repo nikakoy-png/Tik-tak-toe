@@ -30,7 +30,7 @@ export class PlaySocketService {
     }
   }
 
-  sendMessage(message: string): void {
+  sendMessage(message: any): void {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(message);
     }

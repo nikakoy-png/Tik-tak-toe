@@ -1,13 +1,10 @@
 <p>play works!</p>
 
-
-<p>play works!</p>
-
 <div class="game-board">
   <table>
     <tbody>
       <tr *ngFor="let row of gameBoard">
-        <td *ngFor="let cell of row">{{ cell }}</td>
+        <td *ngFor="let cell of row" (click)="handleCellClick(cell.rowIndex, cell.colIndex)">{{ cell.value }}</td>
       </tr>
     </tbody>
   </table>
