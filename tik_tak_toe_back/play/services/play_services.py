@@ -1,4 +1,5 @@
 from asgiref.sync import sync_to_async
+from channels.db import database_sync_to_async
 
 from play.Factory.creator_play_setting import CreatePlay
 from play.Factory.play_creator import PlayCreator
@@ -16,12 +17,18 @@ async def get_user_from_play(play_hash_code: str, type_play: str) -> list:
     return [play.user1, play.user2]
 
 
+@database_sync_to_async
+def save_play(play):
+    play.save()
+
+
 async def upd_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int):
     model = await CreatePlay(PlayCreator(), play_type)
     play = await model.objects.aget(play_hash_code=play_hash_code)
+
     if play.board[Oy][Ox] == 0:
         play.board[Oy][Ox] = curr_tur
-        play.save()
+        await save_play(play)
 
 
 async def get_board(play_hash_code: str, play_type: str):
@@ -29,6 +36,16 @@ async def get_board(play_hash_code: str, play_type: str):
     play = await model.objects.aget(play_hash_code=play_hash_code)
     return play.board
 
+
+async def get_symbol_of_player(player, play_hash_code: str, play_type: str):
+    model = await CreatePlay(PlayCreator(), play_type)
+    play = await model.objects.select_related('user1').aget(play_hash_code=play_hash_code)
+    return 1 if play.user1 == player else -1
+
+
+async def get_goal_for_win_of_play(play_type: str):
+    return 3 if play_type == '3x3' else 5
+# of course replace it on class methods (!!!every method!!!)
 
 async def check_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int, goal: int):
     model = await CreatePlay(PlayCreator(), play_type)

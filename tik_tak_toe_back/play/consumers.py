@@ -3,7 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 from play.redis_services.redis_services import get_next_player, start_turn_timer
 from play.services.play_factory import create_play
-from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board, get_board
+from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board, get_board, \
+    get_symbol_of_player, get_goal_for_win_of_play
 
 
 class SearchPlay(AsyncWebsocketConsumer):
@@ -90,33 +91,36 @@ class PlayConsumer(AsyncWebsocketConsumer):
         # channel__ = await self.channel_layer.group_channels(self.play_name)
         # channel_names = list(channel__.keys())
         # if len(channel_names) == 2:
+        curr_tur_player = await get_next_player(
+            self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type))
         board = await get_board(self.play_hash_code, self.play_type)
-        await start_turn_timer(self.play_hash_code, await get_next_player(
-            self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type)))
+        await start_turn_timer(self.play_hash_code, curr_tur_player)
 
         await self.channel_layer.group_send(
             self.play_name, {
                 "type": "INFO",
                 "message": "successfully_connected_player",
-                "board": board
+                "board": board,
+                "curr_tur": await get_symbol_of_player(curr_tur_player, self.play_hash_code, self.play_type)
             }
         )
-
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.play_name, self.channel_name)
 
     async def receive(self, text_data=None, bytes_data=None):
+        print(text_data)
         text_data__json = json.loads(text_data)
-        Oy, Ox, curr_tur, goal = text_data__json["Oy"], text_data__json["Ox"], text_data__json["curr_tur"], \
-            text_data__json["goal"]
-        await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox, curr_tur=curr_tur, )
+        Oy, Ox, curr_tur = text_data__json["Oy"], text_data__json["Ox"], text_data__json["curr_tur"]
+        __curr_tur = await get_symbol_of_player(self.user, self.play_hash_code, self.play_type)
+        if __curr_tur == curr_tur:
+            await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox, curr_tur=curr_tur, )
         if await check_board(play_type=self.play_type,
-                          play_hash_code=self.play_hash_code,
-                          Oy=Oy,
-                          Ox=Ox,
-                          curr_tur=curr_tur,
-                          goal=goal):
+                             play_hash_code=self.play_hash_code,
+                             Oy=Oy,
+                             Ox=Ox,
+                             curr_tur=curr_tur,
+                             goal=await get_goal_for_win_of_play(self.play_type)):
             await self.channel_layer.group_send(
                 self.play_name, {
                     "type": 'PLAY',
@@ -125,14 +129,37 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 }
             )
         else:
-            await start_turn_timer(self.play_hash_code, await get_next_player(
-            self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type)).pk)
+            board = await get_board(self.play_hash_code, self.play_type)
+            curr_tur = await get_next_player(
+                self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type))
+            await start_turn_timer(self.play_hash_code, curr_tur)
+
+            await self.channel_layer.group_send(
+                self.play_name, {
+                    "type": "INFO",
+                    "message": "successfully_connected_player",
+                    "board": board,
+                    "curr_tur": await get_symbol_of_player(curr_tur, self.play_hash_code, self.play_type)
+                }
+            )
 
     async def INFO(self, event):
         message = event['message']
         board = event['board']
+        curr_tur = event['curr_tur']
         await self.send(text_data=json.dumps({
             "type": 'INFO',
             "message": message,
-            "board": board
+            "board": board,
+            "curr_tur": curr_tur
         }))
+
+    async def PLAY(self, event):
+        message = event['message']
+        player = event['player']
+        await self.send(text_data=json.dumps({
+            "type": 'PLAY',
+            "message": message,
+            "player": player
+        }))
+
