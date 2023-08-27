@@ -1,8 +1,10 @@
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 
+from play import apps
 from play.Factory.creator_play_setting import CreatePlay
 from play.Factory.play_creator import PlayCreator
+
 
 
 async def is_player_in_game(user, play_hash_code: str, type_play: str) -> bool:
@@ -41,6 +43,12 @@ async def get_symbol_of_player(player, play_hash_code: str, play_type: str):
     model = await CreatePlay(PlayCreator(), play_type)
     play = await model.objects.select_related('user1').aget(play_hash_code=play_hash_code)
     return 1 if play.user1 == player else -1
+
+
+# Object -> JSON TEXT
+async def get_ser_data_user(user):
+    from user.serializers import UserSerializer
+    return UserSerializer(user).data
 
 
 async def get_goal_for_win_of_play(play_type: str):
