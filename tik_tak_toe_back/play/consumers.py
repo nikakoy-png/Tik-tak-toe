@@ -73,8 +73,8 @@ class PlayConsumer(AsyncWebsocketConsumer):
     async def add_player_to_play(self, player):
         self.rooms[self.play_name].add(player)
 
-    async def get_player_count_in_play(self):
-        return len(self.rooms[self.play_name])
+    async def get_player_in_play(self):
+        return self.rooms[self.play_name]
 
     async def connect(self):
         self.user = self.scope["user"]
@@ -101,7 +101,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
         }))
         # channel__ = await self.channel_layer.group_channels(self.play_name)
         # channel_names = list(channel__.keys())
-        if await self.get_player_count_in_play() == 2:
+        if len(await self.get_player_in_play()) == 2:
             curr_tur_player = await get_next_player(
                 self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type))
             board = await get_board(self.play_hash_code, self.play_type)
@@ -113,7 +113,8 @@ class PlayConsumer(AsyncWebsocketConsumer):
                     "message": "successfully_connected_player",
                     "board": board,
                     "curr_tur": await get_symbol_of_player(curr_tur_player, self.play_hash_code, self.play_type),
-                    "player": await get_ser_data_user(self.user)
+                    "curr_player": await get_ser_data_user(self.user),
+                    "players": [await get_ser_data_user(user) for user in await self.get_player_in_play()]
                 }
             )
 
@@ -126,7 +127,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
         Oy, Ox, curr_tur = text_data__json["Oy"], text_data__json["Ox"], text_data__json["curr_tur"]
         __curr_tur = await get_symbol_of_player(self.user, self.play_hash_code, self.play_type)
         if __curr_tur == curr_tur:
-            await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox, curr_tur=curr_tur, )
+            await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox, curr_tur=curr_tur)
         if await check_board(play_type=self.play_type,
                              play_hash_code=self.play_hash_code,
                              Oy=Oy,
@@ -153,7 +154,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                         "message": "successfully_connected_player",
                         "board": board,
                         "curr_tur": await get_symbol_of_player(curr_tur, self.play_hash_code, self.play_type),
-                        "player": await get_ser_data_user(self.user)
+                        "curr_player": await get_ser_data_user(self.user)
                     }
                 )
 
@@ -161,13 +162,14 @@ class PlayConsumer(AsyncWebsocketConsumer):
         message = event['message']
         board = event['board']
         curr_tur = event['curr_tur']
-        player = event['player']
+        curr_player = event['curr_player']
         await self.send(text_data=json.dumps({
             "type": 'INFO',
             "message": message,
             "board": board,
             "curr_tur": curr_tur,
-            "player": player
+            "curr_player": curr_player,
+            "players": event['players'] if 'players' in event else None
         }))
 
     async def PLAY(self, event):
