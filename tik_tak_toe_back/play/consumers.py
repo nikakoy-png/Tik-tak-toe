@@ -68,19 +68,24 @@ class SearchPlay(AsyncWebsocketConsumer):
 
 
 class PlayConsumer(AsyncWebsocketConsumer):
-    rooms = defaultdict(set)
+    __play = defaultdict(set)
 
     async def add_player_to_play(self, player):
-        self.rooms[self.play_name].add(player)
+        self.__play[self.play_name].add(player)
 
     async def get_player_in_play(self):
-        return self.rooms[self.play_name]
+        return self.__play[self.play_name]
 
     async def connect(self):
         self.user = self.scope["user"]
         self.play_hash_code = self.scope["url_route"]["kwargs"]["play_hash_code"]
         self.play_type = self.scope["url_route"]["kwargs"]["play_type"]
         self.play_name = "play_%s" % self.play_hash_code
+
+        # if self.user in await self.get_player_in_play():
+        #     await self.accept()
+        #     return
+        # need to do, because bug with tur
 
         if not is_player_in_game:
             await self.close()
