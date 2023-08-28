@@ -37,10 +37,11 @@ async def get_currently_tur(game_id):
 
 
 async def is_turn_expired(game_id, player_id):
+    print(game_id)
+    print(player_id)
     redis = await get_redis_connection()
-    expiration = await redis.get(f"turn_timer:{game_id}:{player_id}")
+    expiration = redis.get(f"turn_timer:{game_id}:{player_id}")
     redis.close()
-    await redis.wait_closed()
     if expiration:
         return float(expiration) < datetime.now().timestamp()
     return False
