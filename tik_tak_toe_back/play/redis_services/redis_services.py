@@ -29,6 +29,13 @@ async def get_next_player(game_id, players: list):
     return current_turn
 
 
+async def get_currently_tur(game_id):
+    redis = await get_redis_connection()
+    User = get_user_model()
+    bite_pk_user = redis.get(f"current_turn:{game_id}")
+    return await User.objects.aget(pk=int(bite_pk_user)) if bite_pk_user is not None else None
+
+
 async def is_turn_expired(game_id, player_id):
     redis = await get_redis_connection()
     expiration = await redis.get(f"turn_timer:{game_id}:{player_id}")

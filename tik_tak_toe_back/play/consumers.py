@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from play.redis_services.redis_services import get_next_player, start_turn_timer
+from play.redis_services.redis_services import get_next_player, start_turn_timer, get_currently_tur
 from play.services.play_factory import create_play
 from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board, get_board, \
     get_symbol_of_player, get_goal_for_win_of_play, get_ser_data_user
@@ -82,46 +82,43 @@ class PlayConsumer(AsyncWebsocketConsumer):
         self.play_type = self.scope["url_route"]["kwargs"]["play_type"]
         self.play_name = "play_%s" % self.play_hash_code
 
-        # if self.user in await self.get_player_in_play():
-        #     await self.accept()
-        #     return
-        # need to do, because bug with tur
+        if self.user in await self.get_player_in_play():
+            await self.channel_layer.group_add(self.play_name, self.channel_name)
+            await self.accept()
+            board = await get_board(self.play_hash_code, self.play_type)
+            curr_tur_player = await get_currently_tur(self.play_hash_code)
+            await self.send(text_data=json.dumps({
+                "type": "INFO",
+                "message": "successfully_connected_player",
+                "board": board,
+                "curr_tur": await get_symbol_of_player(curr_tur_player, self.play_hash_code, self.play_type),
+                "curr_player": await get_ser_data_user(self.user),
+                "players": [await get_ser_data_user(user) for user in await self.get_player_in_play()]
+            }))
+        else:
+            if not is_player_in_game:
+                await self.close()
 
-        if not is_player_in_game:
-            await self.close()
+                await self.send(text_data=json.dumps({
+                    "type": 'INFO',
+                    "message": 'unsuccessfull',
+                    # will add exceptions
+                }))
+
+            await self.channel_layer.group_add(self.play_name, self.channel_name)
+            await self.add_player_to_play(self.user)
+            await self.accept()
 
             await self.send(text_data=json.dumps({
                 "type": 'INFO',
-                "message": 'unsuccessfull',
-                # will add exceptions
+                "message": 'successfully_connected_player',
             }))
-
-        await self.channel_layer.group_add(self.play_name, self.channel_name)
-        await self.add_player_to_play(self.user)
-        await self.accept()
-
-        await self.send(text_data=json.dumps({
-            "type": 'INFO',
-            "message": 'successfully_connected_player',
-        }))
-        # channel__ = await self.channel_layer.group_channels(self.play_name)
-        # channel_names = list(channel__.keys())
-        if len(await self.get_player_in_play()) == 2:
-            curr_tur_player = await get_next_player(
-                self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type))
-            board = await get_board(self.play_hash_code, self.play_type)
-            await start_turn_timer(self.play_hash_code, curr_tur_player)
-
-            await self.channel_layer.group_send(
-                self.play_name, {
-                    "type": "INFO",
-                    "message": "successfully_connected_player",
-                    "board": board,
-                    "curr_tur": await get_symbol_of_player(curr_tur_player, self.play_hash_code, self.play_type),
-                    "curr_player": await get_ser_data_user(self.user),
-                    "players": [await get_ser_data_user(user) for user in await self.get_player_in_play()]
-                }
-            )
+            if len(await self.get_player_in_play()) == 2:
+                curr_tur_player = await get_next_player(
+                    self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type))
+                board = await get_board(self.play_hash_code, self.play_type)
+                await start_turn_timer(self.play_hash_code, curr_tur_player)
+                await self.send_info(board, curr_tur_player)
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.play_name, self.channel_name)
@@ -132,7 +129,8 @@ class PlayConsumer(AsyncWebsocketConsumer):
         Oy, Ox, curr_tur = text_data__json["Oy"], text_data__json["Ox"], text_data__json["curr_tur"]
         __curr_tur = await get_symbol_of_player(self.user, self.play_hash_code, self.play_type)
         if __curr_tur == curr_tur:
-            await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox, curr_tur=curr_tur)
+            await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox,
+                            curr_tur=curr_tur)
         if await check_board(play_type=self.play_type,
                              play_hash_code=self.play_hash_code,
                              Oy=Oy,
@@ -177,6 +175,18 @@ class PlayConsumer(AsyncWebsocketConsumer):
             "players": event['players'] if 'players' in event else None
         }))
 
+    async def send_info(self, board, curr_tur_player):
+        await self.channel_layer.group_send(
+            self.play_name, {
+                "type": "INFO",
+                "message": "successfully_connected_player",
+                "board": board,
+                "curr_tur": await get_symbol_of_player(curr_tur_player, self.play_hash_code, self.play_type),
+                "curr_player": await get_ser_data_user(self.user),
+                "players": [await get_ser_data_user(user) for user in await self.get_player_in_play()]
+            }
+        )
+
     async def PLAY(self, event):
         message = event['message']
         player = event['player']
@@ -185,4 +195,3 @@ class PlayConsumer(AsyncWebsocketConsumer):
             "message": message,
             "player": player
         }))
-
