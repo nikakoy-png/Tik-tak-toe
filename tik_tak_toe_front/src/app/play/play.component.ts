@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PlaySocketService } from '../play-socket.service';
 import { HttpClient } from '@angular/common/http';
 import { Subscription, interval } from 'rxjs';
+import {ApiService} from "../api.service";
 
 @Component({
   selector: 'app-play',
@@ -14,25 +15,26 @@ export class PlayComponent implements OnInit, OnDestroy {
   typePlay = '';
   hashCodePlay = '';
 
+  timer!: '';
   winner!: any;
   currentlyTurn!: any;
   players: any[] = [];
   curr_tur!: any;
   gameBoard!: any[][];
 
-  private timerSubscription: Subscription;
+  timerSubscription!: Subscription;
 
   constructor(
     private socketService: PlaySocketService,
     private route: ActivatedRoute,
-    private http: HttpClient
-  ) {
+    private http: HttpClient,
+    private api: ApiService
+  ) {}
+
+  ngOnInit(): void {
     this.timerSubscription = interval(1000).subscribe(() => {
       this.getTimerData();
     });
-  }
-
-  ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.typePlay = params['play_type'];
       this.hashCodePlay = params['play_hash_code'];
@@ -46,7 +48,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       this.players = parsedMsg['players'] !== null ? parsedMsg['players'] : this.players;
       this.curr_tur = parsedMsg['curr_tur'];
       this.gameBoard = parsedMsg['board'];
-      this.currentlyTurn = parsedMsg['curr_player']['username'];
+      this.currentlyTurn = parsedMsg['curr_player'];
       if (this.gameBoard) {
         this.generateGameBoard();
       }
@@ -79,17 +81,13 @@ export class PlayComponent implements OnInit, OnDestroy {
     });
   }
 
-  getTimerData(): void {
-    const apiUrl = `http://localhost:8000/api/get_timer_turn/`;
-    const requestData = {
-      play_hash_code: this.hashCodePlay
-    };
-    this.http.get<any>(apiUrl, { params: requestData }).subscribe(
-      response => {
-        console.log(response);
-      },
-      error => {
-        console.error(error);
+  async getTimerData(): Promise<void> {
+    await this.api.getTimer(this.hashCodePlay, this.currentlyTurn['id']).subscribe(
+      (response) => {
+        this.timer = response['remaining_time'];
+        },
+      (error) => {
+        console.log(error);
       }
     );
   }

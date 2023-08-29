@@ -1,8 +1,8 @@
 <p>play works!</p>
 <div *ngIf="players.length >= 1">player 1: {{ players[0]['username'] }}</div>
 <div *ngIf="players.length >= 2">player 2: {{ players[1]['username'] }}</div>
-<div>currently turn: {{ currentlyTurn }}</div>
-<!--<div>timer: {{ timer }}</div>-->
+<div>currently turn: {{ currentlyTurn['username'] }}</div>
+<div>timer: {{ timer }}</div>
 <!--<div *ngIf="winner != ''">winner: {{ winner }}</div>-->
 <div class="game-board">
   <table>

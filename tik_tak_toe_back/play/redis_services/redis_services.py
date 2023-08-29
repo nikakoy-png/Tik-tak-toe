@@ -36,12 +36,15 @@ async def get_currently_tur(game_id):
     return await User.objects.aget(pk=int(bite_pk_user)) if bite_pk_user is not None else None
 
 
-async def is_turn_expired(game_id, player_id):
-    print(game_id)
-    print(player_id)
+async def get_remaining_time(game_id, player_id):
     redis = await get_redis_connection()
     expiration = redis.get(f"turn_timer:{game_id}:{player_id}")
     redis.close()
+
     if expiration:
-        return float(expiration) < datetime.now().timestamp()
-    return False
+        expiration_timestamp = float(expiration)
+        current_timestamp = datetime.now().timestamp()
+        remaining_time = max(0, int(expiration_timestamp) - int(current_timestamp))
+        return remaining_time
+
+    return 0.0
