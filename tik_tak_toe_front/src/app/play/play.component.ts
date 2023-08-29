@@ -14,7 +14,6 @@ export class PlayComponent implements OnInit, OnDestroy {
   socketUrl = '';
   typePlay = '';
   hashCodePlay = '';
-  isRequesting = false;
 
   endGame = false
 
@@ -41,11 +40,11 @@ export class PlayComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.endGame) {
-      console.log(1);
       this.route.params.subscribe(params => {
         this.typePlay = params['play_type'];
         this.hashCodePlay = params['play_hash_code'];
       });
+      console.log(this.endGame)
       this.socketUrl = `ws://localhost:8000/ws/play/${this.typePlay}/${this.hashCodePlay}/`;
       this.socketService.connectToSocketServer(this.socketUrl);
       this.socketService.onMessageReceived((msg: any) => {
@@ -63,6 +62,9 @@ export class PlayComponent implements OnInit, OnDestroy {
           console.log(parsedMsg)
           this.winner = parsedMsg['winner']['username'];
           this.endGame = true;
+          if (this.gameBoard) {
+            this.generateGameBoard();
+          }
         }
       });
     } else {
@@ -75,8 +77,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   }
 
   handleCellClick(Oy: number, Ox: number): void {
-    if (!this.isRequesting && this.gameBoard[Oy][Ox].value === ' ' || !this.endGame) {
-      this.isRequesting = true;
+    if (this.gameBoard[Oy][Ox].value === ' ' && !this.endGame) {
 
       const message = {
         "Oy": Oy,
@@ -103,11 +104,9 @@ export class PlayComponent implements OnInit, OnDestroy {
     await this.api.getTimer(this.hashCodePlay, this.currentlyTurn['id']).subscribe(
       (response) => {
         this.timer = response['remaining_time'];
-        this.isRequesting = false;
       },
       (error) => {
-        console.log(error);
-        this.isRequesting = false;
+        console.log(error)
       }
     );
   }
