@@ -128,19 +128,6 @@ class PlayConsumer(AsyncWebsocketConsumer):
         Oy, Ox, curr_tur = text_data__json["Oy"], text_data__json["Ox"], text_data__json["curr_tur"]
         __curr_tur = await get_symbol_of_player(self.user, self.play_hash_code, self.play_type)
 
-        if await check_board(play_type=self.play_type,
-                             play_hash_code=self.play_hash_code,
-                             Oy=Oy,
-                             Ox=Ox,
-                             curr_tur=curr_tur,
-                             goal=await get_goal_for_win_of_play(self.play_type)):
-            await self.channel_layer.group_send(
-                self.play_name, {
-                    "type": 'PLAY',
-                    "message": 'winner',
-                    "player": __curr_tur
-                }
-            )
         if __curr_tur == curr_tur:
             await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox,
                             curr_tur=curr_tur)
@@ -158,8 +145,17 @@ class PlayConsumer(AsyncWebsocketConsumer):
                     "curr_player": await get_ser_data_user(self.user)
                 }
             )
-
-
+            if await check_board(board=board,
+                                 Oy=Oy,
+                                 Ox=Ox,
+                                 goal=await get_goal_for_win_of_play(self.play_type)):
+                await self.channel_layer.group_send(
+                    self.play_name, {
+                        "type": 'PLAY',
+                        "message": 'winner',
+                        "player": await get_ser_data_user(self.user)
+                    }
+                )
 
     async def INFO(self, event):
         message = event['message']

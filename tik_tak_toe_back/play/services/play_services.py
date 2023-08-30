@@ -6,7 +6,6 @@ from play.Factory.creator_play_setting import CreatePlay
 from play.Factory.play_creator import PlayCreator
 
 
-
 async def is_player_in_game(user, play_hash_code: str, type_play: str) -> bool:
     model = await CreatePlay(PlayCreator(), type_play)
     play = await model.objects.aget(play_hash_code=play_hash_code)
@@ -53,12 +52,12 @@ async def get_ser_data_user(user):
 
 async def get_goal_for_win_of_play(play_type: str):
     return 3 if play_type == '3x3' else 5
+
+
 # of course replace it on class methods (!!!every method!!!)
 
-async def check_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int, goal: int):
-    model = await CreatePlay(PlayCreator(), play_type)
-    play = await model.objects.aget(play_hash_code=play_hash_code)
-    board = play.board
+async def check_board(board, Oy: int, Ox: int, goal: int):
+    curr_tur = board[Oy][Ox]
 
     def check_line(past_Oy: int,
                    past_Ox: int,
@@ -77,6 +76,8 @@ async def check_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, cur
             return check_line(next_Oy, next_Ox, (next_Oy + diff_Oy), (next_Ox + diff_Ox), goal, 0, False)
         return False
 
-    if check_line(Oy, Ox, Oy + 1, Ox - 1, goal, 1) or check_line(Oy, Ox, Oy + 1, Ox + 1, goal, 1) \
-            or check_line(Oy, Ox, Oy + 1, Ox, goal, 1) or check_line(Oy, Ox, Oy, Ox + 1, goal, 1):
-        return curr_tur
+    if (check_line(Oy, Ox, Oy + 1, Ox - 1, goal, 1) or
+            check_line(Oy, Ox, Oy + 1, Ox + 1, goal, 1) or
+            check_line(Oy, Ox, Oy + 1, Ox, goal, 1) or
+            check_line(Oy, Ox, Oy, Ox + 1, goal, 1)):
+        return True
