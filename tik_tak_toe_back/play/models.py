@@ -80,4 +80,3 @@ class Play19x19(AbstractPlay):
     async def upd_winner(self, player):
         self.winner = player
         await super().save_play(self)
-

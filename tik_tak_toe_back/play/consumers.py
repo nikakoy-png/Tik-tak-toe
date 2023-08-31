@@ -107,7 +107,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 await self.close()
 
                 await self.send(text_data=json.dumps({
-                    "type": 'INFO',
+                    "type": 'ERROR',
                     "message": 'unsuccessfull',
                     # will add exceptions
                 }))
