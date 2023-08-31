@@ -54,7 +54,6 @@ class Play3x3(AbstractPlay):
     async def upd_board(self, Oy: int, Ox: int, curr_tur):
         if self.board[Oy][Ox] == 0:
             self.board[Oy][Ox] = curr_tur
-            print(self.board)
             await super().save_play(self)
 
     async def upd_winner(self, player):
