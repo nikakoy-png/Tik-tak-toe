@@ -58,7 +58,6 @@ class Play3x3(AbstractPlay):
             await super().save_play(self)
 
     async def upd_winner(self, player):
-        print(1)
         self.winner = player
         await super().save_play(self)
 
@@ -79,7 +78,6 @@ class Play19x19(AbstractPlay):
             await super().save_play(self)
 
     async def upd_winner(self, player):
-        print(1)
         self.winner = player
         await super().save_play(self)
 
