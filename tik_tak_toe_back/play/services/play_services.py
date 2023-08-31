@@ -23,6 +23,13 @@ def save_play(play):
     play.save()
 
 
+async def get_play(play_hash_code: str, type_play: str):
+    model = await CreatePlay(PlayCreator(), type_play)
+    play = await model.objects.select_related('user1', 'user2').aget(play_hash_code=play_hash_code)
+
+    return play
+
+
 async def upd_board(play_type: str, play_hash_code: str, Oy: int, Ox: int, curr_tur: int):
     model = await CreatePlay(PlayCreator(), play_type)
     play = await model.objects.aget(play_hash_code=play_hash_code)

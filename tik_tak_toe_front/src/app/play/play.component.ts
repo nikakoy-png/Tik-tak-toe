@@ -17,7 +17,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   endGame = false;
   timer: number | undefined;
 
-  winner: any;
+  winner: any | null;
   currentlyTurn: any;
   players: any[] = [];
   curr_tur: any;
@@ -61,7 +61,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       if (parsedMsg['type'] === 'PLAY') {
         console.log(parsedMsg)
         this.endGame = true;
-        // this.winner = parsedMsg['winner'];
+        this.winner = parsedMsg['player'];
       }
     });
   }
