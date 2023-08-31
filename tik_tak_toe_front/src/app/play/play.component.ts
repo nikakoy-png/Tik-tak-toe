@@ -49,6 +49,7 @@ export class PlayComponent implements OnInit, OnDestroy {
 
     this.socketService.onMessageReceived((msg: any) => {
       const parsedMsg = JSON.parse(msg);
+      console.log(parsedMsg)
       if (parsedMsg['type'] === 'INFO') {
         this.players = parsedMsg['players'] !== null ? parsedMsg['players'] : this.players;
         this.curr_tur = parsedMsg['curr_tur'];

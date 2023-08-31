@@ -6,7 +6,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from play.redis_services.redis_services import get_next_player, start_turn_timer, get_currently_tur
 from play.services.play_factory import create_play
 from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board, get_board, \
-    get_symbol_of_player, get_goal_for_win_of_play, get_ser_data_user, get_play
+    get_symbol_of_player, get_goal_for_win_of_play, get_ser_data_user, check_status_game, upd_winner
 
 
 class SearchPlay(AsyncWebsocketConsumer):
@@ -81,7 +81,13 @@ class PlayConsumer(AsyncWebsocketConsumer):
         self.play_hash_code = self.scope["url_route"]["kwargs"]["play_hash_code"]
         self.play_type = self.scope["url_route"]["kwargs"]["play_type"]
         self.play_name = "play_%s" % self.play_hash_code
-        # self.play_obj = await get_play(self.play_hash_code, self.play_type)
+
+        if await check_status_game(self.play_hash_code, self.play_type):
+            await self.send(text_data=json.dumps({
+                "type": "ERROR",
+                "message": "Game is over!"
+            }))
+            await self.close()
 
         if self.user in await self.get_player_in_play():
             await self.channel_layer.group_add(self.play_name, self.channel_name)
@@ -157,6 +163,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                         "player": await get_ser_data_user(self.user)
                     }
                 )
+                await upd_winner(self.user, self.play_hash_code, self.play_type)
 
     async def INFO(self, event):
         message = event['message']
@@ -191,6 +198,13 @@ class PlayConsumer(AsyncWebsocketConsumer):
             "type": 'PLAY',
             "message": message,
             "player": player
+        }))
+
+    async def ERROR(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps({
+            "type": 'ERROR',
+            "message": message,
         }))
         
 
