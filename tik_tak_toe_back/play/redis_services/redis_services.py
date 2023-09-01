@@ -1,8 +1,5 @@
 from datetime import datetime, timedelta
-
-from django.apps import apps
 from django.contrib.auth import get_user_model
-
 from play.redis_services.redis_connector import get_redis_connection
 
 
@@ -48,3 +45,12 @@ async def get_remaining_time(game_id, player_id):
         return remaining_time
 
     return 0.0
+
+
+async def clear_data(game_id, players):
+    redis = await get_redis_connection()
+    for player in players:
+        if redis.get(f"turn_timer:{game_id}:{player.pk}"):
+            redis.delete(f"turn_timer:{game_id}:{player.pk}")
+    if redis.get(f"current_turn:{game_id}"):
+        redis.delete(f"current_turn:{game_id}")

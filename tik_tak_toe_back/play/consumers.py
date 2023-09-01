@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from play.redis_services.redis_services import get_next_player, start_turn_timer, get_currently_tur
+from play.redis_services.redis_services import get_next_player, start_turn_timer, get_currently_tur, clear_data
 from play.services.play_factory import create_play
 from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board, get_board, \
     get_symbol_of_player, get_goal_for_win_of_play, get_ser_data_user, check_status_game, upd_winner
@@ -167,6 +167,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 await upd_winner(self.user, self.play_hash_code, self.play_type)
                 await asyncio.gather(*[user.upd_rating(winner=True if user == self.user else False)
                                        for user in await self.get_player_in_play()])
+                await clear_data(self.play_hash_code, await self.get_player_in_play())
 
     async def INFO(self, event):
         message = event['message']

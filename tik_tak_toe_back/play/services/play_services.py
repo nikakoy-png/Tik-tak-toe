@@ -45,6 +45,7 @@ async def upd_winner(player, play_hash_code: str, play_type: str) -> None:
 
     await play.upd_winner(player)
 
+
 # Object -> JSON TEXT
 async def get_ser_data_user(user):
     from user.serializers import UserSerializer

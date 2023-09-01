@@ -11,7 +11,6 @@ class WebSocketTokenAuthMiddleware(BaseMiddleware):
         User = get_user_model()
 
         try:
-            print(123123)
             cookies = dict(scope["headers"]).get(b"cookie", b"").decode("utf-8")
             token = None
             if cookies:
