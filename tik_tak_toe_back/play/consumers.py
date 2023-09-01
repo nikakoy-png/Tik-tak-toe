@@ -1,3 +1,4 @@
+import asyncio
 import json
 from collections import defaultdict
 
@@ -164,6 +165,8 @@ class PlayConsumer(AsyncWebsocketConsumer):
                     }
                 )
                 await upd_winner(self.user, self.play_hash_code, self.play_type)
+                await asyncio.gather(*[user.upd_rating(winner=True if user == self.user else False)
+                                       for user in await self.get_player_in_play()])
 
     async def INFO(self, event):
         message = event['message']

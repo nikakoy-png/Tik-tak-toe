@@ -39,7 +39,8 @@ class UserSerializer(serializers.ModelSerializer):
                   'username',
                   'first_name',
                   'last_name',
-                  'email')
+                  'email',
+                  'rating')
 
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255, write_only=True, required=True)
