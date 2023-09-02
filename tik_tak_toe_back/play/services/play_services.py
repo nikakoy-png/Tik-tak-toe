@@ -57,8 +57,6 @@ async def get_goal_for_win_of_play(play_type: str) -> int:
     return 3 if play_type == '3x3' else 5
 
 
-# of course replace it on class methods (!!!every method!!!)
-
 async def check_board(board, Oy: int, Ox: int, goal: int) -> bool:
     curr_tur = board[Oy][Ox]
 
