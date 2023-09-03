@@ -1,0 +1,179 @@
+.custom-btn {
+  width: 130px;
+  height: 40px;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px 25px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  outline: none;
+}
+
+.btn_ {
+  background-color: #4112ce;
+  background-image: linear-gradient(315deg, #400cab 0%, #3d07a8 74%);
+  line-height: 42px;
+  padding: 0;
+  border: none;
+}
+
+
+.btn-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn_ span {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.btn_:before,
+.btn_:after {
+  position: absolute;
+  content: "";
+  right: 0;
+  bottom: 0;
+  background: #6700ff;
+  transition: all 0.3s ease;
+}
+.btn_:before{
+   height: 0%;
+   width: 2px;
+}
+.btn_:after {
+  width: 0%;
+  height: 2px;
+}
+.btn_:hover:before {
+  height: 100%;
+}
+.btn_:hover:after {
+  width: 100%;
+}
+.btn_:hover{
+  background: transparent;
+}
+.btn_ span:hover{
+  color: #9100ff;
+}
+.btn_ span:before,
+.btn_ span:after {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 0;
+  background: #8f02fa;
+  transition: all 0.3s ease;
+}
+.btn_ span:before {
+  width: 2px;
+  height: 0%;
+}
+.btn_ span:after {
+  height: 2px;
+  width: 0%;
+}
+.btn_ span:hover:before {
+  height: 100%;
+}
+.btn_ span:hover:after {
+  width: 100%;
+}
+
+
+@mixin backlight($x, $y, $spread, $size, $colorA, $colorB, $duration) {
+  &:after {
+    position: absolute;
+    content: "";
+    top: $y;
+    left: $x;
+    right: 0;
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    transform: scale($size);
+    -webkit-filter: blur($spread);
+    -moz-filter: blur($spread);
+    -ms-filter: blur($spread);
+    filter: blur($spread);
+    background: linear-gradient(270deg, $colorA, $colorB);
+    background-size: 200% 200%;
+    animation: animateGlow $duration ease infinite;
+
+    @keyframes animateGlow {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+  }
+}
+
+.animate-div {
+  position: relative;
+  width: 30vw;
+  height: 30vw;
+  line-height: 30vw;
+  text-align: center;
+  color: #252B37;
+  background-color: #151823;
+  animation: textColor 10s ease infinite;
+  @include backlight(0, 5vw, 5vw, 0.75, #0fffc1, #7e0fff, 10s);
+
+  @keyframes textColor {
+    0% {
+      color: #7e0fff;
+    }
+    50% {
+      color: #0fffc1;
+    }
+    100% {
+      color: #7e0fff;
+    }
+  }
+}
+
+.animate-div {
+  margin: 0 auto;
+  height: 100%;
+}
+
+.animate-div {
+  display: flex;
+  align-items: center;
+  font-family: monospace;
+  justify-content: center;
+  background-color:darken(#252B37, 4%);
+}
+
+#content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.animate-div {
+  text-align: center;
+  color: #252B37;
+  background-color: #151823;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+h3 {
+  width: 100%;
+  margin: 0 auto;
+  line-height: 10vw;
+}

@@ -1,6 +1,13 @@
 <div id="content">
-    <div>
-        <button type="button" (click)="searchPlay('3x3')">Search Play 3x3</button>
-        <button type="button" (click)="searchPlay('19x19')">Search Play 19x19</button>
+  <section>
+    <div class="animate-div col-md-8" style="flex-direction: column">
+      <div style="margin: 0 auto">
+        <h3>Search Play</h3>
+      </div>
+      <div class="btn-container col-md-8">
+        <button class="custom-btn btn btn_ col-6" (click)="searchPlay('3x3')"><span>Play 3x3</span></button>
+        <button class="custom-btn btn btn_ col-6" (click)="searchPlay('19x19')"><span>Play 19x19</span></button>
+      </div>
     </div>
+  </section>
 </div>
