@@ -1,12 +1,13 @@
 <div id="content">
   <section>
     <div class="animate-div col-md-8 d-flex flex-column justify-content-center align-items-center">
+      <app-user class="col-md-8 d-flex flex-column justify-content-center align-items-center" [User]=user></app-user>
       <div style="text-align: center;">
         <h3>Search Play</h3>
       </div>
       <div class="btn-container col-md-8 d-flex flex-column justify-content-center align-items-center">
-        <button class="custom-btn btn_ btn " (click)="searchPlay('3x3')"><span>Play 3x3</span></button>
-        <button class="custom-btn btn_ btn " (click)="searchPlay('19x19')"><span>Play 19x19</span></button>
+        <button class="custom-btn btn_ btn" (click)="searchPlay('3x3')"><span>Play 3x3</span></button>
+        <button class="custom-btn btn_ btn" (click)="searchPlay('19x19')"><span>Play 19x19</span></button>
       </div>
     </div>
   </section>

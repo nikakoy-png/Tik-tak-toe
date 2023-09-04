@@ -10,6 +10,7 @@ import { MainComponent } from './main/main.component';
 import { SearchComponent } from './search/search.component';
 import {SearchSocketService} from "./search-socket.service";
 import { PlayComponent } from './play/play.component';
+import { UserComponent } from './user/user.component';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { PlayComponent } from './play/play.component';
     MainComponent,
     SearchComponent,
     PlayComponent,
+    UserComponent,
   ],
   imports: [
     BrowserModule,
