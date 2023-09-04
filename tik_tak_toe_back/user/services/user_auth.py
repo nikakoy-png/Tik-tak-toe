@@ -3,7 +3,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-
 from user.serializers import UserSerializer, UserLoginSerializer, UserRegistrationSerializer
 
 
@@ -16,6 +15,16 @@ async def get_tokens_for_user(user):
 async def get_user_by_token(request):
     try:
         user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ObjectDoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+async def get_user_by_id(user_id):
+    try:
+        from user.models import User
+        user = await User.objects.aget(pk=user_id)
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except ObjectDoesNotExist:

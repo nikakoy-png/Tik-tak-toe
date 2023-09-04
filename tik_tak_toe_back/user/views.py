@@ -2,7 +2,7 @@ from adrf.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 
-from user.services.user_auth import register_user, auth_user, get_user_by_token
+from user.services.user_auth import register_user, auth_user, get_user_by_token, get_user_by_id
 
 
 @api_view(['POST'])
@@ -22,3 +22,8 @@ async def login(request):
         })
     elif request.method == 'POST':
         return await auth_user(request)
+
+
+@api_view(['GET'])
+async def get_user(request, user_id):
+    return await get_user_by_id(user_id)
