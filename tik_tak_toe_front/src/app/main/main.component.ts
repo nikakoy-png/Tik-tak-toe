@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {ApiService} from "../api.service";
 import {UserDto} from "../models/User.dto";
+import {CookieService} from "ngx-cookie-service";
 
 @Component({
   selector: 'app-main',
@@ -9,12 +10,12 @@ import {UserDto} from "../models/User.dto";
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit {
-  constructor(private router: Router, private api: ApiService) {}
+  constructor(private router: Router, private api: ApiService, private cookieService: CookieService) {}
 
-  user!: UserDto;
+  SelfUser!: UserDto;
 
   ngOnInit() {
-    this.api.getUserById(1).subscribe(data => { this.user = data; });
+    this.api.getUserByToken(this.cookieService.get('token')).subscribe(data => { this.SelfUser = data });
   }
 
   searchPlay(boardSize: string) {

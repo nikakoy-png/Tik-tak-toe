@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {RegistrationDto} from "./models/registration.dto";
 import {environment} from "./environments/environment";
@@ -30,7 +30,10 @@ export class ApiService {
     return this.http.get(`${environment.apiUrl}api/get_user/${userId}/`);
   }
 
-  getUserByToken(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}api/login/`);
+  getUserByToken(jwtToken: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${jwtToken}`
+    });
+    return this.http.get(`${environment.apiUrl}api/login/`, { headers });
   }
 }

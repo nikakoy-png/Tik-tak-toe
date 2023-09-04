@@ -21,12 +21,6 @@ export class RegistrationComponent implements OnInit {
         Validators.required,
         Validators.minLength(4),
       ]),
-      first_name: new FormControl('', [
-        Validators.required,
-      ]),
-      last_name: new FormControl('', [
-        Validators.required,
-      ]),
       password: new FormControl('', [
         Validators.required,
       ]),

@@ -16,6 +16,7 @@ async def get_user_by_token(request):
     try:
         user = request.user
         serializer = UserSerializer(user)
+        print(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except ObjectDoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
