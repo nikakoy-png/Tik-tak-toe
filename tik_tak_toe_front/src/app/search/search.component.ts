@@ -22,7 +22,7 @@ export class SearchComponent {
     this.route.params.subscribe(params => {
       this.typePlay = params['play_type'];
     });
-    this.socketUrl = `ws://localhost:8000/ws/search-play/${this.typePlay}/`;
+    this.socketUrl = `wss://.../wss/search-play/${this.typePlay}/`;
     this.socketService.connectToSocketServer(this.socketUrl);
     this.socketService.onMessageReceived((msg: any) => {
       const parsedMsg = JSON.parse(msg);

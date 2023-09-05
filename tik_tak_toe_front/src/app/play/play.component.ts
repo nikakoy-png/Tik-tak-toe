@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { PlaySocketService } from '../play-socket.service';
-import { HttpClient } from '@angular/common/http';
-import { Subscription, interval } from 'rxjs';
-import { ApiService } from "../api.service";
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {PlaySocketService} from '../play-socket.service';
+import {HttpClient} from '@angular/common/http';
+import {Subscription, interval} from 'rxjs';
+import {ApiService} from "../api.service";
 
 @Component({
   selector: 'app-play',
@@ -28,12 +28,13 @@ export class PlayComponent implements OnInit, OnDestroy {
   constructor(
     private socketService: PlaySocketService,
     private route: ActivatedRoute,
+    private router: Router,
     private http: HttpClient,
     private api: ApiService
   ) {
     this.timerSubscription = interval(1000).subscribe(() => {
-      if (!this.endGame){
-       this.getTimerData();
+      if (!this.endGame) {
+        this.getTimerData();
       }
     });
   }
@@ -44,7 +45,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       this.hashCodePlay = params['play_hash_code'];
     });
 
-    this.socketUrl = `ws://localhost:8000/ws/play/${this.typePlay}/${this.hashCodePlay}/`;
+    this.socketUrl = `wss://.../wss/play/${this.typePlay}/${this.hashCodePlay}/`;
     this.socketService.connectToSocketServer(this.socketUrl);
 
     this.socketService.onMessageReceived((msg: any) => {
@@ -63,6 +64,7 @@ export class PlayComponent implements OnInit, OnDestroy {
         console.log(parsedMsg)
         this.endGame = true;
         this.winner = parsedMsg['player'];
+        setInterval(() => { this.router.navigate(['main']); }, 5000);
       }
     });
   }

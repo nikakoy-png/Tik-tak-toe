@@ -64,6 +64,11 @@
             },
             "development": {
               "browserTarget": "tik_tak_toe_front:build:development"
+            },
+            "ssl": {
+              "browserTarget": "tik_tak_toe_front:build:development",
+              "sslKey": "./ssl/localhost.key",
+              "sslCert": "./ssl/localhost.crt"
             }
           },
           "defaultConfiguration": "development"

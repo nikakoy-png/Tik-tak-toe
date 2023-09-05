@@ -14,10 +14,11 @@ export class MainComponent implements OnInit {
 
   SelfUser!: UserDto | null;
   users!: UserDto[];
-
+  isLoading = false;
   ngOnInit() {
     this.api.getUserByToken(this.cookieService.get('token')).subscribe(data => { this.SelfUser = data });
     this.api.getUsersOrderByRating().subscribe(data => { this.users = data });
+    this.isLoading = true;
   }
 
   searchPlay(boardSize: string) {

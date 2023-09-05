@@ -1,8 +1,8 @@
 <div id="content" class="d-flex flex-column">
   <section>
     <div class="animate-div d-flex flex-column justify-content-center align-items-center">
-      <app-user class="d-flex flex-column justify-content-center align-items-center"
-                [User]=SelfUser *ngIf="SelfUser != null"></app-user>
+      <app-user *ngIf="SelfUser != null" class="d-flex flex-column justify-content-center align-items-center"
+                [User]=SelfUser></app-user>
       <div style="text-align: center;">
         <h3>Search Play</h3>
       </div>

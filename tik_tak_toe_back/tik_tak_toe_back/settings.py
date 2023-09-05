@@ -14,8 +14,7 @@ PLAY3x3_MODEL = 'play.Play3x3'
 PLAY19x19_MODEL = 'play.Play19x19'
 ASYNC = True
 DEBUG = os.getenv('DEBUG')
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.x.x', '*']
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -34,6 +33,9 @@ CHANNEL_LAYERS = {
             "hosts": [("127.0.0.1", 6379)],
         },
     },
+    "ssl": True,
+    "ssl_keyfile": "./ssl/localhost.key",
+    "ssl_certfile": "./ssl/localhost.crt",
 }
 
 SIMPLE_JWT = {
@@ -129,6 +131,7 @@ STATIC_URL = 'static/'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-)
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:4200',
+    'https://example.com',
+]
