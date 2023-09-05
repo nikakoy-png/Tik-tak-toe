@@ -11,6 +11,7 @@ import { SearchComponent } from './search/search.component';
 import {SearchSocketService} from "./search-socket.service";
 import { PlayComponent } from './play/play.component';
 import { UserComponent } from './user/user.component';
+import { LoadingComponent } from './loading/loading.component';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { UserComponent } from './user/user.component';
     SearchComponent,
     PlayComponent,
     UserComponent,
+    LoadingComponent,
   ],
   imports: [
     BrowserModule,
