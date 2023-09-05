@@ -1,11 +1,12 @@
 <div id="wrapper">
   <h1>TIK TAK TOE</h1>
-  <h2>text text text</h2>
+  <h2>Sign In</h2>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div>
       <input formControlName="username" type="text" placeholder="username" autofocus>
       <input formControlName="password" type="password" placeholder="password" autofocus>
       <button type="submit" [disabled]="loginForm.invalid">Login</button>
+      <p class="text-white">If you don't have an account, <a routerLink="/registration">Register here</a>.</p>
     </div>
   </form>
 </div>

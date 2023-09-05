@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: 'search-play/:play_type', component: SearchComponent },
   { path: 'play/:play_type/:play_hash_code', component: PlayComponent },
   { path: 'main', component: MainComponent },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/main', pathMatch: 'full' },
 ];
 
 @NgModule({

@@ -3,6 +3,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from "../api.service";
 import {AppRoutingModule} from "../app-routing.module";
 import {Router} from "@angular/router";
+import {CookieService} from "ngx-cookie-service";
 
 @Component({
   selector: 'app-registration',
@@ -32,16 +33,30 @@ export class RegistrationComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private apiService: ApiService,
+              private cookieService: CookieService,
               private router: Router) {
   }
+
+
+  private saveTokenToCookie(token: string): void {
+    this.cookieService.set('token', token);
+  }
+
 
   onSubmit(): void {
     if (this.registrationForm.valid) {
       const formData = this.registrationForm.value;
       this.apiService.register(formData).subscribe(
         (response) => {
-          console.log('successfully')
-          this.router.navigate(['login'])
+          this.apiService.login(formData).subscribe(
+            (response) => {
+              this.saveTokenToCookie(response.access);
+            },
+            (error) => {
+              console.error('Error: ', error);
+            }
+          );
+          this.router.navigate(['main'])
         },
         (error) => {
           console.log('Error: ', error)
