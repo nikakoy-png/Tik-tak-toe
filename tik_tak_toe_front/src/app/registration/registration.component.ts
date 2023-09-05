@@ -56,7 +56,7 @@ export class RegistrationComponent implements OnInit {
               console.error('Error: ', error);
             }
           );
-          this.router.navigate(['main'])
+          this.router.navigate(['main']);
         },
         (error) => {
           console.log('Error: ', error)
