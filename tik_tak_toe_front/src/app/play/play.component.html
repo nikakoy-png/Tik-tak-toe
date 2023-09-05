@@ -1,19 +1,29 @@
-<p>play works!</p>
-<div *ngIf="players != []">
-  <div *ngIf="players.length >= 1">player 1: {{ players[0]['username'] }}|{{ players[0]['rating'] }}</div>
-  <div *ngIf="players.length >= 2">player 2: {{ players[1]['username'] }}|{{ players[1]['rating'] }}</div>
+<div class="col-md-8 mx-auto" *ngIf="players != []">
+  <div class="d-flex justify-content-around text-center">
+    <div *ngIf="players.length >= 1" class="col-md-4 player-info neon">Player 1: {{ players[0]['username'] }}
+      | rating: {{ players[0]['rating'] }}</div>
+
+    <div *ngIf="winner != null" class="neon text-center col-md-4">
+      <div class="neon">Winner: {{ winner['username'] }}</div>
+    </div>
+
+    <div class="col-md-4 text-center" *ngIf="winner == null">
+      <div class="neon">Currently Turn: {{ currentlyTurn['username'] }}</div>
+      <div class="neon">Timer: {{ timer }}</div>
+    </div>
+    <div *ngIf="players.length >= 2" class="col-md-4 player-info neon">Player 2: {{ players[1]['username'] }}
+      | rating: {{ players[1]['rating'] }}</div>
+  </div>
 </div>
-<div>currently turn: {{ currentlyTurn['username'] }}</div>
-<div>timer: {{ timer }}</div>
-<div *ngIf="winner != null">
-  <div>winner: {{ winner['username'] }}</div>
-</div>
-<div class="game-board">
-  <table>
-    <tbody>
-    <tr *ngFor="let row of gameBoard">
-      <td *ngFor="let cell of row" (click)="handleCellClick(cell.rowIndex, cell.colIndex)">{{ cell.value }}</td>
-    </tr>
-    </tbody>
-  </table>
+<div class="game-board-container">
+  <div class="game-board">
+    <table>
+      <tbody>
+        <tr *ngFor="let row of gameBoard">
+          <td *ngFor="let cell of row" (click)="handleCellClick(cell.rowIndex, cell.colIndex)"
+            class="neon-cell">{{ cell.value }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

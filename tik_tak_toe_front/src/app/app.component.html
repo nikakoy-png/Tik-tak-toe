@@ -1,6 +1,4 @@
-<div *ngIf="authService.isAuthenticated(); else unauthorized">
-  Добро пожаловать, авторизованный пользователь!
-</div>
+<div *ngIf="authService.isAuthenticated(); else unauthorized"></div>
 <ng-template #unauthorized>
   <div>Вы не авторизованы.</div>
 </ng-template>
