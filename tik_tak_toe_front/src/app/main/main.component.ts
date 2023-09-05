@@ -13,9 +13,11 @@ export class MainComponent implements OnInit {
   constructor(private router: Router, private api: ApiService, private cookieService: CookieService) {}
 
   SelfUser!: UserDto;
+  users!: UserDto[];
 
   ngOnInit() {
     this.api.getUserByToken(this.cookieService.get('token')).subscribe(data => { this.SelfUser = data });
+    this.api.getUsersOrderByRating().subscribe(data => { this.users = data });
   }
 
   searchPlay(boardSize: string) {

@@ -30,6 +30,10 @@ export class ApiService {
     return this.http.get(`${environment.apiUrl}api/get_user/${userId}/`);
   }
 
+  getUsersOrderByRating(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}api/get_user_order_by_rating/`)
+  }
+
   getUserByToken(jwtToken: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${jwtToken}`
