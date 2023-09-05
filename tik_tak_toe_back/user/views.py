@@ -2,7 +2,7 @@ from adrf.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 
-from user.services.user_auth import register_user, auth_user, get_user_by_token, get_user_by_id
+from user.services.user_auth import register_user, auth_user, get_user_by_token, get_user_by_id, get_order_by_rating
 
 
 @api_view(['POST'])
@@ -27,3 +27,8 @@ async def login(request):
 @api_view(['GET'])
 async def get_user(request, user_id):
     return await get_user_by_id(user_id)
+
+
+@api_view(['GET'])
+async def get_users_order_by_rating(request):
+    return await get_order_by_rating()

@@ -1,4 +1,5 @@
 from asgiref.sync import sync_to_async
+from channels.db import database_sync_to_async
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.response import Response
@@ -40,6 +41,14 @@ async def auth_user(request):
         return Response(tokens, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@database_sync_to_async
+def get_order_by_rating():
+    from user.models import User
+    users = User.objects.order_by('-rating')[:10]
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 async def register_user(request):
