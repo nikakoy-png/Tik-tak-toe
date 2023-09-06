@@ -134,41 +134,54 @@ class PlayConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data=None, bytes_data=None):
         text_data__json = json.loads(text_data)
-        Oy, Ox, curr_tur = text_data__json["Oy"], text_data__json["Ox"], text_data__json["curr_tur"]
-        __curr_tur = await get_symbol_of_player(self.user, self.play_hash_code, self.play_type)
-
-        if __curr_tur == curr_tur:
-            await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox,
-                            curr_tur=curr_tur)
-            board = await get_board(self.play_hash_code, self.play_type)
-            curr_tur = await get_next_player(
-                self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type))
-
-            await start_turn_timer(self.play_hash_code, curr_tur)
+        if text_data__json['type'] == 'timerEqualZero':
             await self.channel_layer.group_send(
                 self.play_name, {
-                    "type": "INFO",
-                    "message": "successfully_connected_player",
-                    "board": board,
-                    "curr_tur": await get_symbol_of_player(curr_tur, self.play_hash_code, self.play_type),
-                    "curr_player": await get_ser_data_user(await get_currently_tur(self.play_hash_code))
+                    "type": 'PLAY',
+                    "message": 'winner',
+                    "player": await get_ser_data_user(self.user)
                 }
             )
-            if await check_board(board=board,
-                                 Oy=Oy,
-                                 Ox=Ox,
-                                 goal=await get_goal_for_win_of_play(self.play_type)):
+            await upd_winner(self.user, self.play_hash_code, self.play_type)
+            await asyncio.gather(*[user.upd_rating(winner=True if user == self.user else False)
+                                   for user in await self.get_player_in_play()])
+            await clear_data(self.play_hash_code, await self.get_player_in_play())
+        else:
+            Oy, Ox, curr_tur = text_data__json["Oy"], text_data__json["Ox"], text_data__json["curr_tur"]
+            __curr_tur = await get_symbol_of_player(self.user, self.play_hash_code, self.play_type)
+
+            if __curr_tur == curr_tur:
+                await upd_board(play_type=self.play_type, play_hash_code=self.play_hash_code, Oy=Oy, Ox=Ox,
+                                curr_tur=curr_tur)
+                board = await get_board(self.play_hash_code, self.play_type)
+                curr_tur = await get_next_player(
+                    self.play_hash_code, await get_user_from_play(self.play_hash_code, self.play_type))
+
+                await start_turn_timer(self.play_hash_code, curr_tur)
                 await self.channel_layer.group_send(
                     self.play_name, {
-                        "type": 'PLAY',
-                        "message": 'winner',
-                        "player": await get_ser_data_user(self.user)
+                        "type": "INFO",
+                        "message": "successfully_connected_player",
+                        "board": board,
+                        "curr_tur": await get_symbol_of_player(curr_tur, self.play_hash_code, self.play_type),
+                        "curr_player": await get_ser_data_user(await get_currently_tur(self.play_hash_code))
                     }
                 )
-                await upd_winner(self.user, self.play_hash_code, self.play_type)
-                await asyncio.gather(*[user.upd_rating(winner=True if user == self.user else False)
-                                       for user in await self.get_player_in_play()])
-                await clear_data(self.play_hash_code, await self.get_player_in_play())
+                if await check_board(board=board,
+                                     Oy=Oy,
+                                     Ox=Ox,
+                                     goal=await get_goal_for_win_of_play(self.play_type)):
+                    await self.channel_layer.group_send(
+                        self.play_name, {
+                            "type": 'PLAY',
+                            "message": 'winner',
+                            "player": await get_ser_data_user(self.user)
+                        }
+                    )
+                    await upd_winner(self.user, self.play_hash_code, self.play_type)
+                    await asyncio.gather(*[user.upd_rating(winner=True if user == self.user else False)
+                                           for user in await self.get_player_in_play()])
+                    await clear_data(self.play_hash_code, await self.get_player_in_play())
 
     async def INFO(self, event):
         message = event['message']

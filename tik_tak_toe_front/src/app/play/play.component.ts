@@ -26,16 +26,14 @@ export class PlayComponent implements OnInit {
   curr_tur: any;
   gameBoard: any[][] = [];
 
-  timerSubscription!: Subscription;
 
   constructor(
     private socketService: PlaySocketService,
     private socketServiceTimer: TimerSocketService,
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
-    private api: ApiService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -52,11 +50,18 @@ export class PlayComponent implements OnInit {
     this.socketServiceTimer.onMessageReceived((msg: any) => {
       const parsedMsg = JSON.parse(msg);
       this.timer = parsedMsg['remaining_time'];
+      if (this.timer === 0) {
+        console.log(123)
+        const message = {
+          "type": 'timerEqualZero',
+        };
+        const messageString = JSON.stringify(message);
+        this.socketService.sendMessage(messageString);
+      }
     });
 
     this.socketService.onMessageReceived((msg: any) => {
       const parsedMsg = JSON.parse(msg);
-      console.log(parsedMsg)
       if (parsedMsg['type'] === 'INFO') {
         this.players = parsedMsg['players'] !== null ? parsedMsg['players'] : this.players;
         this.curr_tur = parsedMsg['curr_tur'];
@@ -67,20 +72,21 @@ export class PlayComponent implements OnInit {
         }
       }
       if (parsedMsg['type'] === 'PLAY') {
-        console.log(parsedMsg)
         this.endGame = true;
         this.winner = parsedMsg['player'];
         this.socketServiceTimer.disconnectFromSocketServer();
         this.socketService.disconnectFromSocketServer();
-        setInterval(() => { this.router.navigate(['main']); }, 5000);
+        this.handleGameEnd(this.winner);
       }
     });
   }
 
   handleCellClick(Oy: number, Ox: number): void {
+    console.log(this.endGame)
     if (this.gameBoard[Oy][Ox].value === ' ' && !this.endGame) {
       console.log(this.endGame)
       const message = {
+        "type": 'turn',
         "Oy": Oy,
         "Ox": Ox,
         "curr_tur": this.curr_tur,
@@ -88,6 +94,16 @@ export class PlayComponent implements OnInit {
       const messageString = JSON.stringify(message);
       this.socketService.sendMessage(messageString);
     }
+  }
+
+  handleGameEnd(winner: any): void {
+    console.log('Game ended with winner:', winner);
+    this.socketServiceTimer.disconnectFromSocketServer();
+    this.socketService.disconnectFromSocketServer();
+
+    setTimeout(() => {
+      this.router.navigate(['main']);
+    }, 5000);
   }
 
   generateGameBoard(): void {
@@ -98,14 +114,5 @@ export class PlayComponent implements OnInit {
         colIndex
       }));
     });
-  }
-
-  async getTimerData(): Promise<void> {
-    try {
-      const response: any = await this.api.getTimer(this.hashCodePlay, this.currentlyTurn['id']).toPromise();
-      this.timer = response['remaining_time'];
-    } catch (error) {
-      console.log(error);
-    }
   }
 }

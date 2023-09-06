@@ -21,11 +21,6 @@ export class ApiService {
     return this.http.post(`${environment.apiUrl}api/login/`, userData);
   }
 
-  getTimer(hashCodePlay: string, player_id: number): Observable<any> {
-    const params = new HttpParams().set('play_hash_code', hashCodePlay).set('player_id', player_id)
-    return this.http.get(`${environment.apiUrl}api/get_timer_turn/`, {params});
-  }
-
   getUserById(userId: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}api/get_user/${userId}/`);
   }
