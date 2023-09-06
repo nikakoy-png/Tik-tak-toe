@@ -2,7 +2,8 @@ import asyncio
 import json
 from collections import defaultdict
 from channels.generic.websocket import AsyncWebsocketConsumer
-from play.redis_services.redis_services import get_next_player, start_turn_timer, get_currently_tur, clear_data
+from play.redis_services.redis_services import get_next_player, start_turn_timer, get_currently_tur, clear_data, \
+    get_remaining_time
 from play.services.play_factory import create_play
 from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board, get_board, \
     get_symbol_of_player, get_goal_for_win_of_play, get_ser_data_user, check_status_game, upd_winner
@@ -43,6 +44,7 @@ class SearchPlay(AsyncWebsocketConsumer):
                                                                     'play_hash_code': play_hash_code,
                                                                     'type_play': self.type_play})
                 except ConnectionResetError:
+                    print(1)
                     await self.disconnect_connected_user(user[0])
                     break
                 except TimeoutError as e:
@@ -209,5 +211,27 @@ class PlayConsumer(AsyncWebsocketConsumer):
             "type": 'ERROR',
             "message": message,
         }))
-        
 
+
+class TimerConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.play_hash_code = self.scope["url_route"]["kwargs"]["play_hash_code"]
+        self.channel_name = f"timer_{self.play_hash_code}"
+        await self.channel_layer.group_add(self.channel_name, self.channel_name)
+        await self.accept()
+        self.timer_task = asyncio.create_task(self.send_timer_update())
+
+    async def disconnect(self, close_code):
+        self.timer_task.cancel()
+        await self.channel_layer.group_discard(self.channel_name, self.channel_name)
+
+    async def send_timer_remaining(self, remaining_time):
+        await self.send(text_data=json.dumps({
+            "remaining_time": remaining_time
+        }))
+
+    async def send_timer_update(self):
+        while True:
+            remaining_time = await get_remaining_time(self.play_hash_code, await get_currently_tur(self.play_hash_code))
+            await self.send_timer_remaining(remaining_time)
+            await asyncio.sleep(1)

@@ -5,14 +5,16 @@ import {HttpClient} from '@angular/common/http';
 import {Subscription, interval} from 'rxjs';
 import {ApiService} from "../api.service";
 import {environment} from "../environments/environment";
+import {TimerSocketService} from "../timer-socket.service";
 
 @Component({
   selector: 'app-play',
   templateUrl: './play.component.html',
   styleUrls: ['./play.component.scss']
 })
-export class PlayComponent implements OnInit, OnDestroy {
+export class PlayComponent implements OnInit {
   socketUrl = '';
+  socketUrlTimer = '';
   typePlay = '';
   hashCodePlay = '';
   endGame = false;
@@ -28,17 +30,12 @@ export class PlayComponent implements OnInit, OnDestroy {
 
   constructor(
     private socketService: PlaySocketService,
+    private socketServiceTimer: TimerSocketService,
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
     private api: ApiService
-  ) {
-    this.timerSubscription = interval(1000).subscribe(() => {
-      if (!this.endGame) {
-        this.getTimerData();
-      }
-    });
-  }
+  ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -48,6 +45,14 @@ export class PlayComponent implements OnInit, OnDestroy {
 
     this.socketUrl = `${environment.SocketUrl}play/${this.typePlay}/${this.hashCodePlay}/`;
     this.socketService.connectToSocketServer(this.socketUrl);
+
+    this.socketUrlTimer = `${environment.SocketUrl}timer/${this.hashCodePlay}/`;
+    this.socketServiceTimer.connectToSocketServer(this.socketUrlTimer);
+
+    this.socketServiceTimer.onMessageReceived((msg: any) => {
+      const parsedMsg = JSON.parse(msg);
+      this.timer = parsedMsg['remaining_time'];
+    });
 
     this.socketService.onMessageReceived((msg: any) => {
       const parsedMsg = JSON.parse(msg);
@@ -65,13 +70,11 @@ export class PlayComponent implements OnInit, OnDestroy {
         console.log(parsedMsg)
         this.endGame = true;
         this.winner = parsedMsg['player'];
+        this.socketServiceTimer.disconnectFromSocketServer();
+        this.socketService.disconnectFromSocketServer();
         setInterval(() => { this.router.navigate(['main']); }, 5000);
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.timerSubscription.unsubscribe();
   }
 
   handleCellClick(Oy: number, Ox: number): void {
