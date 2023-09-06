@@ -1,9 +1,7 @@
 import asyncio
 import json
 from collections import defaultdict
-
 from channels.generic.websocket import AsyncWebsocketConsumer
-
 from play.redis_services.redis_services import get_next_player, start_turn_timer, get_currently_tur, clear_data
 from play.services.play_factory import create_play
 from play.services.play_services import is_player_in_game, get_user_from_play, check_board, upd_board, get_board, \
@@ -17,13 +15,13 @@ class SearchPlay(AsyncWebsocketConsumer):
         self.user = self.scope["user"]
         self.type_play = self.scope['url_route']['kwargs']['type_play']
         self.search_users.add((self.user, self.type_play))
-        await self.channel_layer.group_add(self.user.username, self.channel_name)
+        await self.channel_layer.group_add(str(self.user.username), self.channel_name)
         await self.accept()
         await self.check_searcher()
 
     async def disconnect(self, close_code):
         try:
-            self.search_users.remove(self.user)
+            self.search_users.remove((self.user, self.type_play))
         except KeyError:
             pass
         await self.channel_layer.group_discard(self.user.username, self.channel_name)
@@ -51,7 +49,7 @@ class SearchPlay(AsyncWebsocketConsumer):
                     await self.send_user_message(user[0].username, {'error': e.strerror})
 
     async def disconnect_connected_user(self, user):
-        self.search_users.remove(user)
+        self.search_users.remove((self.user, self.type_play))
         await self.channel_layer.group_discard(user.username, self.channel_name)
 
     async def send_user_message(self, group_name: str, message: dict):

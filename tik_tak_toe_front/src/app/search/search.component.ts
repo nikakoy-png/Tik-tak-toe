@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {SearchSocketService} from "../search-socket.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {environment} from "../environments/environment";
 
 @Component({
   selector: 'app-search',
@@ -22,7 +23,7 @@ export class SearchComponent {
     this.route.params.subscribe(params => {
       this.typePlay = params['play_type'];
     });
-    this.socketUrl = `wss://.../wss/search-play/${this.typePlay}/`;
+    this.socketUrl = `${environment.SocketUrl}search-play/${this.typePlay}/`;
     this.socketService.connectToSocketServer(this.socketUrl);
     this.socketService.onMessageReceived((msg: any) => {
       const parsedMsg = JSON.parse(msg);

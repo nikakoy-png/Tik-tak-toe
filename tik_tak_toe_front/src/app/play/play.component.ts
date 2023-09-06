@@ -4,6 +4,7 @@ import {PlaySocketService} from '../play-socket.service';
 import {HttpClient} from '@angular/common/http';
 import {Subscription, interval} from 'rxjs';
 import {ApiService} from "../api.service";
+import {environment} from "../environments/environment";
 
 @Component({
   selector: 'app-play',
@@ -45,7 +46,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       this.hashCodePlay = params['play_hash_code'];
     });
 
-    this.socketUrl = `wss://.../wss/play/${this.typePlay}/${this.hashCodePlay}/`;
+    this.socketUrl = `${environment.SocketUrl}play/${this.typePlay}/${this.hashCodePlay}/`;
     this.socketService.connectToSocketServer(this.socketUrl);
 
     this.socketService.onMessageReceived((msg: any) => {
