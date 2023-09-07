@@ -19,10 +19,10 @@
   <div class="game-board">
     <table>
       <tbody>
-        <tr *ngFor="let row of gameBoard">
-          <td *ngFor="let cell of row" (click)="handleCellClick(cell.rowIndex, cell.colIndex)"
-            class="neon-cell">{{ cell.value }}</td>
-        </tr>
+      <tr *ngFor="let row of gameBoard">
+        <td *ngFor="let cell of row" (click)="handleCellClick(cell.rowIndex, cell.colIndex)"
+            [ngClass]="{'empty': cell.value === 0, 'cross': cell.value === 'X', 'circle': cell.value === 'O'}"></td>
+      </tr>
       </tbody>
     </table>
   </div>

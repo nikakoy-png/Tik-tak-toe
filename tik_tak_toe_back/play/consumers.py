@@ -132,20 +132,28 @@ class PlayConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.play_name, self.channel_name)
 
+    async def end_game(self, is_timer_equal_zero: bool):
+        print([(await self.get_player_in_play())].remove(self.user))
+        winner = self.user if not is_timer_equal_zero else [(await self.get_player_in_play())].remove(self.user)[0]
+
+        print(winner)
+
+        await self.channel_layer.group_send(
+            self.play_name, {
+                "type": 'PLAY',
+                "message": 'winner',
+                "player": await get_ser_data_user(winner)
+            }
+        )
+        await upd_winner(winner, self.play_hash_code, self.play_type)
+        await asyncio.gather(*[user.upd_rating(winner=True if user == winner else False)
+                               for user in await self.get_player_in_play()])
+        await clear_data(self.play_hash_code, await self.get_player_in_play())
+
     async def receive(self, text_data=None, bytes_data=None):
         text_data__json = json.loads(text_data)
         if text_data__json['type'] == 'timerEqualZero':
-            await self.channel_layer.group_send(
-                self.play_name, {
-                    "type": 'PLAY',
-                    "message": 'winner',
-                    "player": await get_ser_data_user(self.user)
-                }
-            )
-            await upd_winner(self.user, self.play_hash_code, self.play_type)
-            await asyncio.gather(*[user.upd_rating(winner=True if user == self.user else False)
-                                   for user in await self.get_player_in_play()])
-            await clear_data(self.play_hash_code, await self.get_player_in_play())
+            await self.end_game(is_timer_equal_zero=True)
         else:
             Oy, Ox, curr_tur = text_data__json["Oy"], text_data__json["Ox"], text_data__json["curr_tur"]
             __curr_tur = await get_symbol_of_player(self.user, self.play_hash_code, self.play_type)
@@ -171,17 +179,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                                      Oy=Oy,
                                      Ox=Ox,
                                      goal=await get_goal_for_win_of_play(self.play_type)):
-                    await self.channel_layer.group_send(
-                        self.play_name, {
-                            "type": 'PLAY',
-                            "message": 'winner',
-                            "player": await get_ser_data_user(self.user)
-                        }
-                    )
-                    await upd_winner(self.user, self.play_hash_code, self.play_type)
-                    await asyncio.gather(*[user.upd_rating(winner=True if user == self.user else False)
-                                           for user in await self.get_player_in_play()])
-                    await clear_data(self.play_hash_code, await self.get_player_in_play())
+                    await self.end_game(is_timer_equal_zero=False)
 
     async def INFO(self, event):
         message = event['message']

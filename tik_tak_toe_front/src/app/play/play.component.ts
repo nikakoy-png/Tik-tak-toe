@@ -20,6 +20,8 @@ export class PlayComponent implements OnInit {
   endGame = false;
   timer: number | undefined;
 
+  isRequest = false;
+
   winner: any | null;
   currentlyTurn: any;
   players: any[] = [];
@@ -51,7 +53,6 @@ export class PlayComponent implements OnInit {
       const parsedMsg = JSON.parse(msg);
       this.timer = parsedMsg['remaining_time'];
       if (this.timer === 0) {
-        console.log(123)
         const message = {
           "type": 'timerEqualZero',
         };
@@ -63,6 +64,7 @@ export class PlayComponent implements OnInit {
     this.socketService.onMessageReceived((msg: any) => {
       const parsedMsg = JSON.parse(msg);
       if (parsedMsg['type'] === 'INFO') {
+        this.isRequest = false;
         this.players = parsedMsg['players'] !== null ? parsedMsg['players'] : this.players;
         this.curr_tur = parsedMsg['curr_tur'];
         this.gameBoard = parsedMsg['board'];
@@ -75,16 +77,16 @@ export class PlayComponent implements OnInit {
         this.endGame = true;
         this.winner = parsedMsg['player'];
         this.socketServiceTimer.disconnectFromSocketServer();
-        this.socketService.disconnectFromSocketServer();
         this.handleGameEnd(this.winner);
+        this.socketService.disconnectFromSocketServer();
       }
     });
   }
 
   handleCellClick(Oy: number, Ox: number): void {
     console.log(this.endGame)
-    if (this.gameBoard[Oy][Ox].value === ' ' && !this.endGame) {
-      console.log(this.endGame)
+    if (this.gameBoard[Oy][Ox].value === ' ' && !this.endGame && !this.isRequest) {
+      this.isRequest = true;
       const message = {
         "type": 'turn',
         "Oy": Oy,
