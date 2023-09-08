@@ -1,29 +1,33 @@
-<div class="col-md-8 mx-auto" *ngIf="players != []">
-  <div class="d-flex justify-content-around text-center">
-    <div *ngIf="players.length >= 1" class="col-md-4 player-info neon">Player 1: {{ players[0]['username'] }}
-      | rating: {{ players[0]['rating'] }}</div>
+<app-loading id="content" *ngIf="gameBoard == [] || players == []"></app-loading>
 
-    <div *ngIf="winner != null" class="neon text-center col-md-4">
-      <div class="neon">Winner: {{ winner['username'] }}</div>
-    </div>
+<section  *ngIf="gameBoard != [] && players != []">
+  <div class="col-md-8 mx-auto">
+    <div class="d-flex justify-content-around text-center">
+      <div *ngIf="players.length >= 1" class="col-md-4 player-info neon">Player 1: {{ players[0]['username'] }}
+        | rating: {{ players[0]['rating'] }}</div>
 
-    <div class="col-md-4 text-center" *ngIf="winner == null">
-      <div class="neon">Currently Turn: {{ currentlyTurn['username'] }}</div>
-      <div class="neon">Timer: {{ timer }}</div>
+      <div *ngIf="winner != null" class="neon text-center col-md-4">
+        <div class="neon">Winner: {{ winner['username'] }}</div>
+      </div>
+
+      <div class="col-md-4 text-center" *ngIf="winner == null">
+        <div class="neon">Currently Turn: {{ currentlyTurn['username'] }}</div>
+        <div class="neon">Timer: {{ timer }}</div>
+      </div>
+      <div *ngIf="players.length >= 2" class="col-md-4 player-info neon">Player 2: {{ players[1]['username'] }}
+        | rating: {{ players[1]['rating'] }}</div>
     </div>
-    <div *ngIf="players.length >= 2" class="col-md-4 player-info neon">Player 2: {{ players[1]['username'] }}
-      | rating: {{ players[1]['rating'] }}</div>
   </div>
-</div>
-<div class="game-board-container">
-  <div class="game-board">
-    <table>
-      <tbody>
-      <tr *ngFor="let row of gameBoard">
-        <td *ngFor="let cell of row" (click)="handleCellClick(cell.rowIndex, cell.colIndex)"
-            [ngClass]="{'empty': cell.value === 0, 'cross': cell.value === 'X', 'circle': cell.value === 'O'}"></td>
-      </tr>
-      </tbody>
-    </table>
+  <div class="game-board-container">
+    <div class="game-board">
+      <table>
+        <tbody>
+        <tr *ngFor="let row of gameBoard">
+          <td *ngFor="let cell of row" (click)="handleCellClick(cell.rowIndex, cell.colIndex)"
+              [ngClass]="{'empty': cell.value === 0, 'cross': cell.value === 'X', 'circle': cell.value === 'O'}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+</section>
