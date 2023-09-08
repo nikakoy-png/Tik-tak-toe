@@ -1,4 +1,6 @@
-<div id="content" class="d-flex flex-column">
+<app-loading id="content" *ngIf="SelfUser == null || users == null"></app-loading>
+
+<div id="content" class="d-flex flex-column" *ngIf="SelfUser != null && users != null">
   <section>
     <div class="animate-div d-flex flex-column justify-content-center align-items-center">
       <app-user *ngIf="SelfUser != null" class="d-flex flex-column justify-content-center align-items-center"
@@ -32,3 +34,4 @@
     </div>
   </section>
 </div>
+
