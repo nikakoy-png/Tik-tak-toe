@@ -133,10 +133,9 @@ class PlayConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.play_name, self.channel_name)
 
     async def end_game(self, is_timer_equal_zero: bool):
-        print([(await self.get_player_in_play())].remove(self.user))
-        winner = self.user if not is_timer_equal_zero else [(await self.get_player_in_play())].remove(self.user)[0]
-
-        print(winner)
+        users = [user for user in await self.get_player_in_play()]
+        users.remove(self.user)
+        winner = self.user if not is_timer_equal_zero else users[0]
 
         await self.channel_layer.group_send(
             self.play_name, {
