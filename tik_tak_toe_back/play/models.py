@@ -46,7 +46,7 @@ class Play3x3(AbstractPlay):
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='plays_as_user2_3X3')
     board = ArrayField(ArrayField(models.IntegerField(), size=3),
                        blank=True,
-                       default=default_board_3x3())
+                       default=default_board_3x3)
 
     async def get_board(self) -> List[list]:
         return self.board
@@ -66,7 +66,7 @@ class Play19x19(AbstractPlay):
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='plays_as_user2_19X19')
     board = ArrayField(ArrayField(models.IntegerField(), size=19),
                        blank=True,
-                       default=default_board_19x19())
+                       default=default_board_19x19)
 
     async def get_board(self) -> List[list]:
         return self.board
