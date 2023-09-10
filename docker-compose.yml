@@ -2,7 +2,7 @@ version: '3'
 services:
   django:
     build:
-      context: .
+      context: ./tik_tak_toe_front
       dockerfile: Dockerfile.django
     ports:
       - "8000:8000"
@@ -33,7 +33,7 @@ services:
 
   angular:
     build:
-      context: .
+      context: ./tik_tak_toe_front
       dockerfile: Dockerfile.angular
     ports:
       - "4200:4200"
