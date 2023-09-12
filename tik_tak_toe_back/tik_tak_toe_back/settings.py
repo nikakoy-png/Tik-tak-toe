@@ -8,12 +8,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG') == 'True'
 
 AUTH_USER_MODEL = 'user.User'
 PLAY3x3_MODEL = 'play.Play3x3'
 PLAY19x19_MODEL = 'play.Play19x19'
 ASYNC = True
-DEBUG = os.getenv('DEBUG')
 ALLOWED_HOSTS = ['192.168.x.x', '*']
 
 AUTHENTICATION_BACKENDS = [
@@ -96,11 +96,11 @@ ASGI_APPLICATION = 'tik_tak_toe_back.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'NAME': os.getenv('DJANGO_DB_NAME'),
+        'USER': os.getenv('DJANGO_DB_USER'),
+        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+        'HOST': os.getenv('DJANGO_DB_HOST'),
+        'PORT': os.getenv('DJANGO_DB_PORT'),
     }
 }
 
