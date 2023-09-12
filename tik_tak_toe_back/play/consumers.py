@@ -35,7 +35,6 @@ class SearchPlay(AsyncWebsocketConsumer):
             await self.connect_users(user_to_connect)
 
     async def connect_users(self, users):
-        # We takes {(<User: nikakoy_>, '3x3'), (<User: Vera>, '3x3')} as data for connecting
         play_hash_code = await create_play(users, self.type_play)
         if play_hash_code:
             for user in users:
