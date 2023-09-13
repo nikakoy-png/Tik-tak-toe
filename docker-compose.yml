@@ -2,7 +2,7 @@ version: '3'
 services:
   django:
     build:
-      context: ./tik_tak_toe_front
+      context: ./tik_tak_toe_back
       dockerfile: Dockerfile.django
     ports:
       - "8000:8000"
