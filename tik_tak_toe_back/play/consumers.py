@@ -89,7 +89,6 @@ class PlayConsumer(AsyncWebsocketConsumer):
             }))
             await self.close()
 
-        # for reconnect
         if self.user in await self.get_player_in_play():
             await self.channel_layer.group_add(self.play_name, self.channel_name)
             await self.accept()
