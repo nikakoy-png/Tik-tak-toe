@@ -1,40 +1,36 @@
 version: '3'
 services:
-  postgres:
+  db:
     image: postgres:13
     environment:
       POSTGRES_DB: tik_tak_toe
-      POSTGRES_USER: nikakoy-png
+      POSTGRES_USER: nikakoy
       POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
 
   redis:
     image: redis:latest
     ports:
-      - "6379:6379"
+      - "6379:"
+
   django:
     build:
       context: ./tik_tak_toe_back
       dockerfile: Dockerfile.django
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./tik_tak_toe_back:/app
+    environment:
+      - DATABASE_HOST=db
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
-    depends_on:
-      - postgres
-      - redis
-    environment:
-      - DJANGO_DB_HOST=postgres
-      - DJANGO_DB_PORT=5432
-      - DJANGO_DB_NAME=tik_tak_toe
-      - DJANGO_DB_USER=nikakoy-png
-      - DJANGO_DB_PASSWORD=root
-      - REDIS_HOST=redis
 
   angular:
     build:
       context: ./tik_tak_toe_front
       dockerfile: Dockerfile.angular
     ports:
-      - "4200:4200"
-    volumes:
-      - .:/app
+      - "4200:443"
